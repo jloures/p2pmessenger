@@ -43,6 +43,16 @@ display.genBtn.addEventListener('click', () => {
   inputs.roomId.value = 'room-' + Math.random().toString(36).substring(2, 9);
 });
 
+// Auto-fill from URL hash
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.hash) {
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    if (params.has('room')) inputs.roomId.value = params.get('room');
+    if (params.has('pass')) inputs.password.value = params.get('pass');
+    if (params.has('name')) inputs.username.value = params.get('name');
+  }
+});
+
 // Join Room
 forms.join.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -57,22 +67,31 @@ forms.join.addEventListener('submit', async (e) => {
 
   try {
     enterChatView();
+    appendSystemMessage(`Connecting to room: ${roomName}...`);
     initP2P(roomName, password);
-    appendSystemMessage(`Initialized frequency: ${roomName}. Sharing via BitTorrent trackers...`);
+    appendSystemMessage(`Signal strength: Looking for peers via trackers...`);
     if (password) {
-      appendSystemMessage('🛡️ End-to-End Encryption enabled via Secret Key.');
+      appendSystemMessage('🛡️ End-to-End Encryption active.');
     }
   } catch (err) {
     console.error(err);
-    alert('Failed to initialize P2P connection.');
+    appendSystemMessage(`Initialization Error: ${err.message}`);
   }
 });
 
+// Global Error Handler for mobile debugging
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+  appendSystemMessage(`System Error: ${msg} [Line: ${lineNo}]`);
+  return false;
+};
+
 // Copy Room ID
 display.copyBtn?.addEventListener('click', () => {
-  navigator.clipboard.writeText(activeRoomId);
+  const shareUrl = `${window.location.origin}${window.location.pathname}#room=${activeRoomId}&pass=${inputs.password.value}`;
+  navigator.clipboard.writeText(shareUrl);
+
   const originalText = display.copyBtn.textContent;
-  display.copyBtn.textContent = '✅';
+  display.copyBtn.textContent = '🔗';
   setTimeout(() => {
     display.copyBtn.textContent = originalText;
   }, 2000);
@@ -133,6 +152,7 @@ function initP2P(roomName, password) {
 
   // Handle peers
   room.onPeerJoin(peerId => {
+    appendSystemMessage(`Target found. Waiting for handshake...`);
     // Broadcast our handle to the new peer
     sendAction({ type: 'handshake', sender: myHandle });
   });

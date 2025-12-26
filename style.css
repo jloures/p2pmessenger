@@ -460,7 +460,8 @@ input:focus {
   }
 
   .chat-interface {
-    height: 100vh;
+    height: 100dvh;
+    height: -webkit-fill-available;
     border-radius: 0;
     max-width: 100%;
   }
@@ -471,6 +472,9 @@ input:focus {
 
   .messages-area {
     padding: 12px;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .message-bubble {
