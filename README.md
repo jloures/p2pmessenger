@@ -2,7 +2,7 @@
 
 **p2pmessenger** is a serverless, private, and purely peer-to-peer (P2P) messenger. It allows people to meet online and chat in real-time without a central server, ensuring high privacy and low latency.
 
-![p2pmessenger Preview](https://jloures.github.io/p2pmessenger/)
+[Preview here](https://jloures.github.io/p2pmessenger/)
 
 ## ✨ Features
 
