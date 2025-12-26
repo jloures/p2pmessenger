@@ -12,6 +12,7 @@
         "vite": "^7.3.0"
     },
     "dependencies": {
+        "buffer": "^6.0.3",
         "trystero": "^0.22.0"
     }
 }

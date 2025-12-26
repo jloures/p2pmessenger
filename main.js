@@ -1,6 +1,24 @@
+// Polyfill for libraries that expect 'global' or 'Buffer' (common in P2P/crypto libs)
+if (typeof global === 'undefined') {
+  window.global = window;
+}
+
+// Some P2P libraries require Buffer during handshake or encryption
+import { Buffer } from 'buffer';
+window.Buffer = Buffer;
+
 import { joinRoom } from 'trystero/torrent';
 
 const APP_ID = 'p2pmsg-v1';
+
+// Catch unhandled promise rejections for UI feedback
+window.addEventListener('unhandledrejection', event => {
+  console.error('Unhandled rejection:', event.reason);
+  const msg = event.reason?.message || event.reason || 'Unknown async error';
+  if (typeof appendSystemMessage === 'function') {
+    appendSystemMessage(`📡 Connection Error: ${msg}`);
+  }
+});
 
 // State
 let room;
@@ -9,39 +27,54 @@ let myHandle = '';
 let sendAction; // Trystero send function
 let peers = {}; // peerId -> metadata (handle)
 
-// DOM Elements
+// DOM Elements - Helper to catch missing elements
+const getEl = (id) => {
+  const el = document.getElementById(id);
+  if (!el) console.warn(`Element with id "${id}" not found.`);
+  return el;
+};
+
 const views = {
-  join: document.getElementById('join-view'),
-  chat: document.getElementById('chat-view'),
+  join: getEl('join-view'),
+  chat: getEl('chat-view'),
 };
 
 const forms = {
-  join: document.getElementById('join-form'),
-  chat: document.getElementById('chat-form'),
+  join: getEl('join-form'),
+  chat: getEl('chat-form'),
 };
 
 const inputs = {
-  username: document.getElementById('username'),
-  roomId: document.getElementById('room-id'),
-  password: document.getElementById('room-password'),
-  message: document.getElementById('message-input'),
+  username: getEl('username'),
+  roomId: getEl('room-id'),
+  password: getEl('room-password'),
+  message: getEl('message-input'),
 };
 
 const display = {
-  roomName: document.getElementById('display-room-id'),
-  peerCount: document.getElementById('peer-count'),
-  messages: document.getElementById('messages-container'),
-  genBtn: document.getElementById('gen-room-btn'),
-  leaveBtn: document.getElementById('leave-btn'),
-  copyBtn: document.getElementById('copy-room-btn'),
+  roomName: getEl('display-room-id'),
+  peerCount: getEl('peer-count'),
+  messages: getEl('messages-container'),
+  genBtn: getEl('gen-room-btn'),
+  leaveBtn: getEl('leave-btn'),
+  copyBtn: getEl('copy-room-btn'),
 };
 
 // --- Initialization ---
 
 // Generate random room ID on click
-display.genBtn.addEventListener('click', () => {
-  inputs.roomId.value = 'room-' + Math.random().toString(36).substring(2, 9);
-});
+if (display.genBtn) {
+  display.genBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const randomId = 'room-' + Math.random().toString(36).substring(2, 9);
+    if (inputs.roomId) {
+      inputs.roomId.value = randomId;
+      console.log('Dice clicked, generated:', randomId);
+    }
+  });
+} else {
+  console.error('Dice button (gen-room-btn) not found in DOM');
+}
 
 // Auto-fill from URL hash
 window.addEventListener('DOMContentLoaded', () => {
