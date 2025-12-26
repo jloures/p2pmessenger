@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('ToonChat Unit Tests (Logic & Utilities)', () => {
+test.describe('p2pmessenger Unit Tests (Logic & Utilities)', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');

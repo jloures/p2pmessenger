@@ -8,7 +8,7 @@ test.describe('P2P Messenger UI Tests', () => {
 
     test('should display the join view on start', async ({ page }) => {
         await expect(page.locator('#join-view')).toBeVisible();
-        await expect(page.locator('h1').first()).toHaveText('TOONCHAT!');
+        await expect(page.locator('h1').first()).toHaveText('P2PMESSENGER!');
     });
 
     test('should generate a random room ID when dice is clicked', async ({ page }) => {

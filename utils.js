@@ -1,5 +1,5 @@
 /**
- * ToonChat Utility Toolkit
+ * p2pmessenger Utility Toolkit
  */
 
 export const escapeHtml = (text) => {

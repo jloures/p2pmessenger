@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('ToonChat Extra E2E Scenarios', () => {
+test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
     test('E2E: Dice button generates distinct IDs in sequence', async ({ page }) => {
         await page.goto('/');

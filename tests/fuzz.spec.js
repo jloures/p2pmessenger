@@ -9,7 +9,7 @@ const getRandomString = (length) => {
     return result;
 };
 
-test.describe('ToonChat Fuzz Testing (UI Resilience & Input Handling)', () => {
+test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
