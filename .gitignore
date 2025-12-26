@@ -11,7 +11,12 @@ dist
 
 # Misc
 .DS_Store
+*.DS_Store
+Thumbs.db
 *.pem
+*.swp
+*.swo
+*.log
 
 # Debug
 npm-debug.log*
@@ -30,6 +35,15 @@ yarn-error.log*
 
 # Local Netlify folder
 .netlify
+
+# IDEs
+.vscode/
+.idea/
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
 # Playwright
 playwright-report/
