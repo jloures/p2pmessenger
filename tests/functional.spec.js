@@ -83,10 +83,16 @@ test.describe('P2P Messenger Functional Tests', () => {
         await pageB.goto('/');
         await pageB.evaluate(async (rn) => {
             window.messenger.join(rn, 'Bob');
-            // Wait a bit for connection
-            await new Promise(r => setTimeout(r, 2000));
-            window.messenger.sendMessage('Logic Test Message');
         }, roomName);
+
+        // Wait for Bob to see 2 peers before sending
+        await expect.poll(async () => {
+            return await pageB.evaluate(() => window.messenger.getPeerCount());
+        }, { timeout: 30000 }).toBe(2);
+
+        await pageB.evaluate(() => {
+            window.messenger.sendMessage('Logic Test Message');
+        });
 
         // Check if Alice's state received the message
         await expect.poll(async () => {
