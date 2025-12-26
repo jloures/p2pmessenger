@@ -17,6 +17,10 @@ body {
   background-image: radial-gradient(var(--toon-black) 1px, transparent 0);
   background-size: 24px 24px;
   font-family: 'Quicksand', sans-serif;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  /* Prevent body scroll */
 }
 
 h1,
@@ -120,4 +124,41 @@ h2 {
 
 .chat-bubble-right .message-meta {
   color: white;
+}
+
+/* Mobile Friendly Responsive Styles */
+@media (max-width: 640px) {
+  body {
+    padding: 0 !important;
+  }
+
+  #app {
+    max-width: none !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  .toon-border {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  #join-view,
+  #chat-view {
+    height: 100% !important;
+  }
+
+  /* Make sure header and footer stay at edges */
+  header {
+    flex-shrink: 0;
+  }
+
+  footer {
+    flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+    /* Handle notch/home indicator */
+  }
 }
