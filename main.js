@@ -170,6 +170,11 @@ if (forms.chat) {
 // 8. HELPERS
 
 function enterChatView() {
+  const app = document.getElementById('app');
+  if (app) {
+    app.classList.remove('max-w-sm');
+    app.classList.add('max-w-6xl', 'h-[92vh]', 'flex');
+  }
   if (views.join) views.join.classList.add('hidden');
   if (views.chat) views.chat.classList.remove('hidden');
   if (display.roomName) display.roomName.textContent = `#${activeRoomId.toUpperCase()}`;
