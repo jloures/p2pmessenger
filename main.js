@@ -3,10 +3,10 @@ if (typeof global === 'undefined') {
   window.global = window;
 }
 
-import { Buffer } from 'buffer';
+import { Buffer } from 'https://esm.sh/buffer@6.0.3';
 window.Buffer = Buffer;
 
-import { joinRoom } from 'trystero/torrent';
+import { joinRoom } from 'https://esm.sh/trystero@0.22.0/torrent';
 
 // 2. CONFIG
 const APP_ID = 'p2pmsg-v1';
