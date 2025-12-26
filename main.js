@@ -1,22 +1,18 @@
-// 1. POLYFILLS (MUST BE AT THE VERY TOP)
-if (typeof global === 'undefined') {
-  window.global = window;
-}
-
 import { Buffer } from 'https://esm.sh/buffer@6.0.3';
 window.Buffer = Buffer;
 
-import { joinRoom } from 'https://esm.sh/trystero@0.22.0/torrent';
+import { P2PMessenger } from './p2p.js';
 
 // 2. CONFIG
 const APP_ID = 'p2pmsg-v1';
 
 // 3. STATE
-let room;
-let activeRoomId = '';
+const messenger = new P2PMessenger(APP_ID);
 let myHandle = '';
-let sendAction; // Trystero send function
-let peers = {}; // peerId -> metadata (handle)
+let activeRoomId = '';
+
+// Expose for testing/debugging
+window.messenger = messenger;
 
 // 4. DOM ELEMENTS (ROBUST SELECTION)
 const getEl = (id) => {
@@ -65,7 +61,6 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 
 // 6. INITIALIZATION & UI EVENTS
 
-// Update Version
 function updateVersionAndHash() {
   const versionEl = document.getElementById('app-version');
   if (versionEl && typeof APP_VERSION !== 'undefined') {
@@ -80,7 +75,6 @@ function updateVersionAndHash() {
   }
 }
 
-// Run immediately and also on load to be safe
 updateVersionAndHash();
 window.addEventListener('load', updateVersionAndHash);
 window.addEventListener('hashchange', updateVersionAndHash);
@@ -113,7 +107,17 @@ if (forms.join) {
     try {
       enterChatView();
       appendSystemMessage(`Connecting to room: ${roomName}...`);
-      initP2P(roomName, password);
+
+      messenger.onMessage = (data) => appendMessage(data, false);
+      messenger.onSystemMessage = (msg) => appendSystemMessage(msg);
+      messenger.onPeerUpdate = (count) => {
+        if (display.peerCount) {
+          display.peerCount.textContent = `${count} Peer${count !== 1 ? 's' : ''}`;
+        }
+      };
+
+      messenger.join(roomName, handle, password);
+
       appendSystemMessage(`Looking for peers via trackers...`);
       if (password) {
         appendSystemMessage('🛡️ E2EE Encryption active.');
@@ -142,6 +146,7 @@ if (display.copyBtn) {
 
 if (display.leaveBtn) {
   display.leaveBtn.addEventListener('click', () => {
+    messenger.leave();
     window.location.reload();
   });
 }
@@ -153,67 +158,10 @@ if (forms.chat) {
     const text = inputs.message.value.trim();
     if (!text) return;
 
-    if (sendAction) {
-      sendAction({ text, sender: myHandle, timestamp: Date.now() });
-    }
-
-    appendMessage({ text, sender: myHandle, timestamp: Date.now() }, true);
+    const msg = messenger.sendMessage(text);
+    appendMessage(msg, true);
     inputs.message.value = '';
   });
-}
-
-
-// 7. P2P LOGIC
-
-function initP2P(roomName, password) {
-  const config = { appId: APP_ID };
-  if (password) config.password = password;
-
-  room = joinRoom(config, roomName);
-
-  const [sendMsg, getMsg] = room.makeAction('chat');
-  sendAction = sendMsg;
-
-  getMsg((data, peerId) => {
-    if (data.type === 'handshake') {
-      peers[peerId] = data.sender;
-      appendSystemMessage(`${data.sender} joined.`);
-      sendAction({ type: 'handshake-reply', sender: myHandle });
-      updatePeerCount();
-      return;
-    }
-    if (data.type === 'handshake-reply') {
-      peers[peerId] = data.sender;
-      appendSystemMessage(`Connected to ${data.sender}.`);
-      updatePeerCount();
-      return;
-    }
-    appendMessage(data, false);
-  });
-
-  room.onPeerJoin(peerId => {
-    appendSystemMessage(`Peer found, shaking hands...`);
-    if (sendAction) {
-      sendAction({ type: 'handshake', sender: myHandle });
-    }
-  });
-
-  room.onPeerLeave(peerId => {
-    const handle = peers[peerId] || 'A peer';
-    delete peers[peerId];
-    updatePeerCount();
-    appendSystemMessage(`${handle} left.`);
-  });
-
-  updatePeerCount();
-}
-
-function updatePeerCount() {
-  if (!room) return;
-  const count = Object.keys(room.getPeers()).length + 1;
-  if (display.peerCount) {
-    display.peerCount.textContent = `${count} Peer${count !== 1 ? 's' : ''}`;
-  }
 }
 
 // 8. HELPERS
@@ -260,3 +208,4 @@ function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return text.replace(/[&<>"']/g, function (m) { return map[m]; });
 }
+
