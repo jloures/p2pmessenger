@@ -16,7 +16,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
 
         // Alice is in
         await expect(alicePage.locator('#chat-view')).toBeVisible();
-        await expect(alicePage.locator('#peer-count')).toHaveText('1 Peer');
+        await expect(alicePage.locator('#peer-count')).toHaveText('1 HERO ONLINE');
 
         // 2. Alice copies the link
         await alicePage.click('#copy-room-btn');
@@ -34,8 +34,8 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await bobPage.click('button[type="submit"]');
 
         // 4. Verification of Connection
-        await expect(alicePage.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
-        await expect(bobPage.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
+        await expect(alicePage.locator('#peer-count')).toHaveText('2 HEROES ONLINE', { timeout: 30000 });
+        await expect(bobPage.locator('#peer-count')).toHaveText('2 HEROES ONLINE', { timeout: 30000 });
 
         // 5. Encrypted Chat Exchange
         await alicePage.fill('#message-input', 'Hey Bob, is this secure?');
@@ -53,7 +53,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await expect(bobPage.locator('#join-view')).toBeVisible();
 
         // Alice should see Bob left
-        await expect(alicePage.locator('#peer-count')).toHaveText('1 Peer', { timeout: 30000 });
+        await expect(alicePage.locator('#peer-count')).toHaveText('1 HERO ONLINE', { timeout: 30000 });
 
         // Check for the system message anywhere in the container
         await expect(alicePage.locator('#messages-container')).toContainText('BOB LEFT', { timeout: 15000 });
@@ -90,8 +90,8 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         const alicePeerCount = await pageA.locator('#peer-count').textContent();
         const bobPeerCount = await pageB.locator('#peer-count').textContent();
 
-        expect(alicePeerCount).toBe('1 Peer');
-        expect(bobPeerCount).toBe('1 Peer');
+        expect(alicePeerCount).toBe('1 HERO ONLINE');
+        expect(bobPeerCount).toBe('1 HERO ONLINE');
 
         await contextA.close();
         await contextB.close();
@@ -112,9 +112,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
             pages.push(page);
         }
 
-        // Every user should eventually see "3 Peers"
+        // Every user should eventually see "3 HEROES ONLINE"
         for (const page of pages) {
-            await expect(page.locator('#peer-count')).toHaveText('3 Peers', { timeout: 60000 });
+            await expect(page.locator('#peer-count')).toHaveText('3 HEROES ONLINE', { timeout: 60000 });
         }
 
         // Alice sends one message

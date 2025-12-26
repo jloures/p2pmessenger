@@ -2,9 +2,8 @@
   --toon-yellow: #FFD93D;
   --toon-green: #6BCB77;
   --toon-red: #FF6B6B;
-  --toon-blue: #4D96FF;
+  --toon-sky: #4D96FF;
   --toon-black: #1A1A1A;
-  --toon-white: #FFFFFF;
 }
 
 * {
@@ -23,7 +22,7 @@ body {
 h1,
 h2 {
   font-family: 'Fredoka One', cursive;
-  -webkit-text-stroke: 1px var(--toon-black);
+  -webkit-text-stroke: 2px var(--toon-black);
   paint-order: stroke fill;
   text-transform: uppercase;
 }
@@ -31,11 +30,12 @@ h2 {
 .toon-border {
   border: 6px solid var(--toon-black);
   box-shadow: 8px 8px 0px var(--toon-black);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .toon-button {
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
   cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .toon-button:active {
@@ -47,63 +47,14 @@ h2 {
   border: 4px solid var(--toon-black);
   border-radius: 20px 20px 20px 4px;
   box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
-  background-color: var(--toon-white);
-  color: var(--toon-black);
-  padding: 12px 16px;
-  font-weight: 700;
-  max-width: 85%;
-  align-self: flex-start;
-  position: relative;
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-color: white;
 }
 
 .chat-bubble-right {
   border: 4px solid var(--toon-black);
   border-radius: 20px 20px 4px 20px;
   box-shadow: -4px 4px 0px rgba(0, 0, 0, 0.1);
-  background-color: var(--toon-blue);
-  color: var(--toon-white);
-  padding: 12px 16px;
-  font-weight: 700;
-  max-width: 85%;
-  align-self: flex-end;
-  position: relative;
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.sender-name {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-  color: var(--toon-black);
-}
-
-.message-meta {
-  display: block;
-  font-size: 0.65rem;
-  font-weight: 700;
-  margin-top: 4px;
-  opacity: 0.7;
-}
-
-.chat-bubble-right .sender-name,
-.chat-bubble-right .message-meta {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.system-message {
-  align-self: center;
-  background: var(--toon-black);
-  color: var(--toon-white);
-  padding: 6px 12px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  margin: 10px 0;
-  border: 2px solid var(--toon-black);
+  background-color: var(--toon-sky);
 }
 
 .scroll-custom::-webkit-scrollbar {
@@ -119,6 +70,18 @@ h2 {
   border: 3px solid var(--toon-black);
 }
 
+.system-message {
+  align-self: center;
+  background: var(--toon-black);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin: 10px 0;
+}
+
 .version-tag {
   font-family: 'Fredoka One', cursive;
   font-size: 0.8rem;
@@ -130,6 +93,7 @@ h2 {
   border-bottom-width: 6px;
 }
 
+/* Animations for new bubbles */
 @keyframes popIn {
   from {
     opacity: 0;
@@ -140,4 +104,20 @@ h2 {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+}
+
+.chat-bubble-anim {
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.message-meta {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-top: 4px;
+  opacity: 0.7;
+}
+
+.chat-bubble-right .message-meta {
+  color: white;
 }

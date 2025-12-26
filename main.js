@@ -115,7 +115,7 @@ if (forms.join) {
       messenger.onSystemMessage = (msg) => appendSystemMessage(msg);
       messenger.onPeerUpdate = (count) => {
         if (display.peerCount) {
-          display.peerCount.textContent = `${count} Peer${count !== 1 ? 's' : ''}`;
+          display.peerCount.textContent = `${count} HERO${count !== 1 ? 'ES' : ''} ONLINE`;
         }
       };
 
@@ -179,15 +179,15 @@ function appendMessage(data, isOwn) {
   if (!display.messages) return;
 
   const div = document.createElement('div');
-  div.className = `flex flex-col ${isOwn ? 'items-end ml-auto' : 'items-start'} max-w-[90%] w-full`;
+  div.className = `flex flex-col ${isOwn ? 'items-end ml-auto' : 'items-start'} max-w-[85%] w-full chat-bubble-anim`;
 
   const time = utils.formatTime(data.timestamp);
 
   div.innerHTML = `
-    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-xs font-black text-[#1A1A1A] uppercase">${isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero')}</span>
-    <div class="${isOwn ? 'chat-bubble-right' : 'chat-bubble-left'}">
+    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-sm font-bold text-[#1A1A1A]">${isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero')}</span>
+    <div class="p-3 ${isOwn ? 'bg-[#4D96FF] chat-bubble-right text-white border-4 border-[#1A1A1A]' : 'bg-white chat-bubble-left text-[#1A1A1A]'} font-bold">
       ${utils.escapeHtml(data.text || '')}
-      <span class="message-meta">${time}</span>
+      <span class="message-meta text-[10px] mt-1">${time}</span>
     </div>
   `;
 
@@ -198,7 +198,7 @@ function appendMessage(data, isOwn) {
 function appendSystemMessage(text) {
   if (!display.messages) return;
   const div = document.createElement('div');
-  div.className = 'system-message';
+  div.className = 'system-message chat-bubble-anim';
   div.textContent = text.toUpperCase();
   display.messages.appendChild(div);
   scrollToBottom();

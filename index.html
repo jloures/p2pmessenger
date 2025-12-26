@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>p2pmessenger | Cartoon Chat</title>
+  <title>ToonChat - P2P Messenger</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap"
     rel="stylesheet">
@@ -13,52 +13,55 @@
 </head>
 
 <body class="h-screen flex items-center justify-center p-4">
-  <div id="app" class="w-full max-w-lg h-[90vh] flex flex-col bg-white toon-border overflow-hidden relative">
 
-    <!-- Login / Join View -->
+  <div id="app" class="w-full max-w-md h-[80vh] flex flex-col bg-white toon-border overflow-hidden relative">
+
+    <!-- Join View -->
     <div id="join-view" class="absolute inset-0 z-20 flex flex-col bg-white">
-      <header class="bg-[#FFD93D] p-6 border-b-6 border-[#1A1A1A]">
-        <h1 class="text-4xl text-white tracking-wider text-center">P2P MESSENGER!</h1>
-        <p class="text-[#1A1A1A] font-bold text-center mt-2 lowercase">serverless. private. pure p2p.</p>
+      <header class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-[#FF6B6B] rounded-full border-4 border-[#1A1A1A]"></div>
+          <h1 class="text-2xl text-white tracking-wider uppercase">TOONCHAT!</h1>
+        </div>
+        <div class="flex gap-2">
+          <div class="w-4 h-4 bg-white border-2 border-[#1A1A1A] rounded-full"></div>
+          <div class="w-4 h-4 bg-white border-2 border-[#1A1A1A] rounded-full"></div>
+        </div>
       </header>
 
-      <main class="flex-1 p-6 space-y-6 overflow-y-auto bg-[#6BCB77]/10">
-        <form id="join-form" class="space-y-6">
+      <main class="flex-1 p-6 space-y-6 overflow-y-auto bg-[#6BCB77]/10 scroll-custom">
+        <form id="join-form" class="space-y-4">
           <div class="space-y-2">
-            <label for="username" class="block font-black text-[#1A1A1A] ml-1 uppercase">Who are you?</label>
-            <input type="text" id="username" placeholder="Enter hero name..." required autocomplete="off"
-              class="w-full p-4 rounded-2xl border-4 border-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#4D96FF] outline-none" />
+            <label for="username" class="block font-bold text-[#1A1A1A] ml-1">WHO ARE YOU?</label>
+            <input type="text" id="username" placeholder="Hero name..." required autocomplete="off"
+              class="w-full p-3 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
           </div>
 
           <div class="space-y-2">
-            <label for="room-id" class="block font-black text-[#1A1A1A] ml-1 uppercase">Frequency (Room)</label>
+            <label for="room-id" class="block font-bold text-[#1A1A1A] ml-1">FREQUENCY (ROOM)</label>
             <div class="flex gap-2">
-              <input type="text" id="room-id" placeholder="Room name..." required autocomplete="off"
-                class="flex-1 p-4 rounded-2xl border-4 border-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#4D96FF] outline-none" />
+              <input type="text" id="room-id" placeholder="Room ID..." required autocomplete="off"
+                class="flex-1 p-3 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
               <button type="button" id="gen-room-btn"
-                class="bg-[#FFD93D] p-4 rounded-2xl border-4 border-[#1A1A1A] font-black text-2xl toon-button"
-                title="Generate Random">🎲</button>
+                class="bg-[#FFD93D] p-3 rounded-xl border-4 border-[#1A1A1A] font-black text-xl toon-button">🎲</button>
             </div>
           </div>
 
           <div class="space-y-2">
-            <label for="room-password" class="block font-black text-[#1A1A1A] ml-1 uppercase">Secret Key
-              (optional)</label>
-            <input type="password" id="room-password" placeholder="E2EE key..." autocomplete="off"
-              class="w-full p-4 rounded-2xl border-4 border-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#4D96FF] outline-none" />
+            <label for="room-password" class="block font-bold text-[#1A1A1A] ml-1">SECRET KEY (OPTIONAL)</label>
+            <input type="password" id="room-password" placeholder="Passkey..." autocomplete="off"
+              class="w-full p-3 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
           </div>
 
-          <div class="pt-4">
-            <button type="submit"
-              class="w-full bg-[#FF6B6B] text-white p-5 rounded-2xl border-4 border-[#1A1A1A] shadow-[6px_6px_0px_#1A1A1A] toon-button font-black text-2xl tracking-widest">
-              INITIALIZE LINK!
-            </button>
-          </div>
+          <button type="submit"
+            class="w-full bg-[#FF6B6B] text-white p-4 rounded-xl border-4 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] toon-button font-black text-xl tracking-widest mt-4">
+            JOIN THE CHAT!
+          </button>
         </form>
       </main>
 
-      <footer class="p-4 bg-[#FFD93D] border-t-6 border-[#1A1A1A] text-center">
-        <span id="app-version" class="version-tag">v1.0.0</span>
+      <footer class="p-4 bg-[#FFD93D] border-t-6 border-[#1A1A1A] flex justify-center">
+        <span id="app-version" class="version-tag">v1.2.0</span>
       </footer>
     </div>
 
@@ -66,40 +69,36 @@
     <div id="chat-view" class="hidden flex flex-col h-full w-full">
       <header class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-[#FF6B6B] rounded-full border-4 border-[#1A1A1A]"></div>
+          <div class="w-12 h-12 bg-[#FF6B6B] rounded-full border-4 border-[#1A1A1A]"></div>
           <div>
-            <h2 id="display-room-id" class="text-xl text-white">#GENERAL</h2>
+            <h1 id="display-room-id" class="text-2xl text-white tracking-wider uppercase">TOONCHAT!</h1>
             <div class="flex items-center gap-2">
-              <span class="w-2 h-2 bg-[#6BCB77] rounded-full border-2 border-[#1A1A1A]"></span>
-              <span id="peer-count" class="text-[10px] font-black uppercase text-[#1A1A1A]">1 Peer</span>
+              <span id="peer-count" class="text-[10px] font-bold uppercase text-[#1A1A1A]">1 HERO ONLINE</span>
             </div>
           </div>
         </div>
         <div class="flex gap-2">
           <button id="copy-room-btn"
-            class="bg-white p-2 px-3 rounded-xl border-4 border-[#1A1A1A] font-black text-sm toon-button"
-            title="Copy Room ID">COPY 📋</button>
+            class="bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">LINK 🔗</button>
           <button id="leave-btn"
-            class="bg-[#FF6B6B] text-white p-2 px-3 rounded-xl border-4 border-[#1A1A1A] font-black text-sm toon-button">EXIT
+            class="bg-[#FF6B6B] text-white p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">EXIT
             ❌</button>
         </div>
       </header>
 
-      <!-- Messages Area -->
+      <!-- Message Area -->
       <main id="messages-container"
-        class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-[#6BCB77]/10 scroll-custom">
-        <div class="system-message">
-          <p>WELCOME TO THE ENCRYPTED COMIC. WAITING FOR PEERS...</p>
-        </div>
+        class="flex-1 overflow-y-auto p-4 space-y-6 bg-[#6BCB77]/10 scroll-custom flex flex-col">
+        <div class="system-message">INITIALIZING SECURE COMIC CHANNEL...</div>
       </main>
 
       <!-- Input Area -->
       <footer class="p-4 bg-[#FFD93D] border-t-6 border-[#1A1A1A]">
         <form id="chat-form" class="flex gap-2">
           <input type="text" id="message-input" placeholder="Type a super message..." autocomplete="off"
-            class="flex-1 p-3 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
+            class="flex-1 p-3 rounded-xl border-4 border-[#1A1A1A] font-bold focus:outline-none focus:ring-4 focus:ring-[#4D96FF]">
           <button type="submit"
-            class="bg-[#FF6B6B] text-white px-6 py-2 rounded-xl border-4 border-[#1A1A1A] toon-button font-transparent font-black text-lg">
+            class="bg-[#FF6B6B] text-white px-6 py-2 rounded-xl toon-border toon-button font-black text-lg">
             GO!
           </button>
         </form>

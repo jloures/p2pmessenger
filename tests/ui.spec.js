@@ -8,7 +8,7 @@ test.describe('P2P Messenger UI Tests', () => {
 
     test('should display the join view on start', async ({ page }) => {
         await expect(page.locator('#join-view')).toBeVisible();
-        await expect(page.locator('h1')).toHaveText('P2P MESSENGER!');
+        await expect(page.locator('h1').first()).toHaveText('TOONCHAT!');
     });
 
     test('should generate a random room ID when dice is clicked', async ({ page }) => {
@@ -102,9 +102,9 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(pageA.locator('#chat-view')).toBeVisible();
         await expect(pageB.locator('#chat-view')).toBeVisible();
 
-        // Wait for both to see "2 Peers" (themselves + the other)
-        await expect(pageA.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
-        await expect(pageB.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
+        // Wait for both to see "2 HEROES ONLINE" (themselves + the other)
+        await expect(pageA.locator('#peer-count')).toHaveText('2 HEROES ONLINE', { timeout: 30000 });
+        await expect(pageB.locator('#peer-count')).toHaveText('2 HEROES ONLINE', { timeout: 30000 });
 
         // Alice sends a message
         await pageA.fill('#message-input', 'Hello from Alice');

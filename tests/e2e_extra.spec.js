@@ -149,7 +149,7 @@ test.describe('ToonChat Extra E2E Scenarios', () => {
         await pageA.fill('#room-id', room);
         await pageA.click('button[type="submit"]');
 
-        await expect(pageA.locator('#peer-count')).toHaveText('1 Peer');
+        await expect(pageA.locator('#peer-count')).toHaveText('1 HERO ONLINE');
 
         const contextB = await browser.newContext();
         const pageB = await contextB.newPage();
@@ -158,7 +158,7 @@ test.describe('ToonChat Extra E2E Scenarios', () => {
         await pageB.fill('#room-id', room);
         await pageB.click('button[type="submit"]');
 
-        await expect(pageA.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
+        await expect(pageA.locator('#peer-count')).toHaveText('2 HEROES ONLINE', { timeout: 30000 });
     });
 
 });
