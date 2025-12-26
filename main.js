@@ -126,7 +126,8 @@ function renderRoomList() {
   els.roomList.innerHTML = '';
   rooms.forEach(room => {
     const btn = document.createElement('button');
-    btn.className = `room-item ${activeRoomId === room.id ? 'active' : ''}`;
+    btn.className = `room-item group ${activeRoomId === room.id ? 'active' : ''}`;
+    btn.dataset.roomId = room.id;
     btn.innerHTML = `
       <span class="room-icon">${room.icon || '💬'}</span>
       <div class="flex-1 min-w-0">
@@ -170,6 +171,9 @@ function renameRoom(id, newName) {
     room.name = newName;
     saveRooms();
     renderRoomList();
+    if (activeRoomId === id) {
+      switchRoom(id);
+    }
   }
 }
 
