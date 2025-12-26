@@ -81,7 +81,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_APP_VERSION: "v1.0.${{ github.run_number }}"
+          VITE_APP_BUILD_NUMBER: "${{ github.run_number }}"
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

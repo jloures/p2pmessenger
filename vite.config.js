@@ -3,6 +3,6 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   base: './',
   define: {
-    APP_VERSION: JSON.stringify(process.env.VITE_APP_VERSION || 'dev-' + new Date().toISOString().split('T')[0])
+    APP_VERSION: JSON.stringify('1.' + (process.env.VITE_APP_BUILD_NUMBER || '0') + '.0')
   }
 })
