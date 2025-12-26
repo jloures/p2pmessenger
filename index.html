@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aether | P2P Messenger</title>
+  <title>p2pmsg | Secure P2P Messenger</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
     <div id="join-view" class="view-container">
       <div class="hero-card glass-panel fade-in-up">
         <div class="logo-area">
-          <h1>Aether</h1>
+          <h1>p2pmsg</h1>
           <p class="subtitle">Serverless. Private. Pure P2P.</p>
         </div>
 
@@ -39,6 +39,12 @@
               <input type="text" id="room-id" placeholder="Enter room name..." required autocomplete="off" />
               <button type="button" id="gen-room-btn" class="icon-btn" title="Generate Random">🎲</button>
             </div>
+          </div>
+
+          <div class="input-group">
+            <label for="room-password">Secret Key (E2EE)</label>
+            <input type="password" id="room-password" placeholder="Optional encryption key..." autocomplete="off" />
+            <small class="input-help">Only peers with this key can decrypt messages.</small>
           </div>
 
           <button type="submit" class="cta-btn">Initialize Link</button>

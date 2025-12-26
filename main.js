@@ -1,6 +1,6 @@
 import { joinRoom } from 'trystero/torrent';
 
-const APP_ID = 'aether-messenger-v1';
+const APP_ID = 'p2pmsg-v1';
 
 // State
 let room;
@@ -23,6 +23,7 @@ const forms = {
 const inputs = {
   username: document.getElementById('username'),
   roomId: document.getElementById('room-id'),
+  password: document.getElementById('room-password'),
   message: document.getElementById('message-input'),
 };
 
@@ -47,6 +48,7 @@ forms.join.addEventListener('submit', async (e) => {
   e.preventDefault();
   const handle = inputs.username.value.trim();
   const roomName = inputs.roomId.value.trim();
+  const password = inputs.password.value.trim();
 
   if (!handle || !roomName) return;
 
@@ -55,8 +57,11 @@ forms.join.addEventListener('submit', async (e) => {
 
   try {
     enterChatView();
-    initP2P(roomName);
+    initP2P(roomName, password);
     appendSystemMessage(`Initialized frequency: ${roomName}. Sharing via BitTorrent trackers...`);
+    if (password) {
+      appendSystemMessage('🛡️ End-to-End Encryption enabled via Secret Key.');
+    }
   } catch (err) {
     console.error(err);
     alert('Failed to initialize P2P connection.');
@@ -95,9 +100,13 @@ forms.chat.addEventListener('submit', (e) => {
 
 // --- P2P Logic ---
 
-function initP2P(roomName) {
+function initP2P(roomName, password) {
   // Join the room using BitTorrent trackers
-  room = joinRoom({ appId: APP_ID }, roomName);
+  // Trystero uses the password to derive a 256-bit AES key for E2EE
+  const config = { appId: APP_ID };
+  if (password) config.password = password;
+
+  room = joinRoom(config, roomName);
 
   // Create data channel for chat
   const [sendMsg, getMsg] = room.makeAction('chat');

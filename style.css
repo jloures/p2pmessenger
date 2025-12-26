@@ -178,6 +178,14 @@ input:focus {
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
 }
 
+.input-help {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
 .input-with-action {
   display: flex;
   gap: 8px;
@@ -222,11 +230,12 @@ input:focus {
 /* --- Chat View --- */
 .chat-interface {
   width: 100%;
-  max-width: 900px;
-  height: 85vh;
+  max-width: 1100px;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .chat-header {
@@ -432,5 +441,71 @@ input:focus {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+  .view-container {
+    padding: 10px;
+  }
+
+  .hero-card {
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .hero-card h1 {
+    font-size: 2.2rem;
+  }
+
+  .chat-interface {
+    height: 100vh;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .chat-header {
+    padding: 12px 16px;
+  }
+
+  .messages-area {
+    padding: 12px;
+  }
+
+  .message-bubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .input-area {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .input-area input {
+    padding: 12px;
+  }
+
+  .send-btn {
+    width: 44px;
+  }
+
+  .peer-status {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  .secondary-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .hero-card {
+    gap: 16px;
+    padding: 20px;
   }
 }
