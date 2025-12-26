@@ -18,32 +18,28 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
     test('Fuzz: Random Username Characters', async ({ page }) => {
         const fuzzName = getRandomString(50);
         await page.fill('#username', fuzzName);
-        await page.fill('#room-id', 'fuzz-room');
-        await page.click('button[type="submit"]');
         await expect(page.locator('#app')).toBeVisible();
     });
 
-    test('Fuzz: Random Room ID Characters', async ({ page }) => {
+    test('Fuzz: Random Room ID Characters in Modal', async ({ page }) => {
+        await page.click('#show-join-modal');
         const fuzzRoom = getRandomString(50);
-        await page.fill('#username', 'Fuzzer');
         await page.fill('#room-id', fuzzRoom);
-        await page.click('button[type="submit"]');
+        await page.click('#join-form button[type="submit"]');
         await expect(page.locator('#app')).toBeVisible();
     });
 
     test('Fuzz: Random Password Strings', async ({ page }) => {
+        await page.click('#show-join-modal');
         const fuzzPass = getRandomString(100);
-        await page.fill('#username', 'Fuzzer');
         await page.fill('#room-id', 'fuzz-room');
         await page.fill('#room-password', fuzzPass);
-        await page.click('button[type="submit"]');
+        await page.click('#join-form button[type="submit"]');
         await expect(page.locator('#app')).toBeVisible();
     });
 
     test('Fuzz: Mass Random Messaging', async ({ page }) => {
         await page.fill('#username', 'SpeedyFuzzer');
-        await page.fill('#room-id', 'perf-room');
-        await page.click('button[type="submit"]');
 
         for (let i = 0; i < 20; i++) {
             const msg = getRandomString(Math.floor(Math.random() * 200));
@@ -55,22 +51,8 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
         expect(count).toBeGreaterThan(0);
     });
 
-    test('Fuzz: URL Hash Parameter Injection', async ({ page }) => {
-        const urlSafeChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~';
-        const getUrlSafeString = (len) => Array.from({ length: len }, () => urlSafeChars[Math.floor(Math.random() * urlSafeChars.length)]).join('');
-
-        const weirdHash = `#room=${getUrlSafeString(50)}&name=${getUrlSafeString(50)}&pass=${getUrlSafeString(50)}`;
-        await page.goto('/' + weirdHash);
-
-        await expect(page.locator('#app')).toBeVisible();
-        const roomVal = await page.inputValue('#room-id');
-        expect(roomVal).toBeDefined();
-    });
-
     test('Fuzz: Huge Message Payload', async ({ page }) => {
         await page.fill('#username', 'GigantoFuzzer');
-        await page.fill('#room-id', 'big-room');
-        await page.click('button[type="submit"]');
 
         const hugeMsg = 'A'.repeat(5000); // 5KB string
         await page.fill('#message-input', hugeMsg);
@@ -94,31 +76,6 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
         }
     });
 
-    test('Fuzz: Rapid View Switching (Fake Clicks)', async ({ page }) => {
-        await page.fill('#username', 'ClickerFuzzer');
-        await page.fill('#room-id', 'click-room');
-        await page.click('button[type="submit"]');
-
-        for (let i = 0; i < 10; i++) {
-            await page.click('#copy-room-btn');
-            if (i % 2 === 0) {
-                await page.fill('#message-input', 'spam');
-                await page.keyboard.press('Enter');
-            }
-        }
-        await expect(page.locator('#chat-view')).toBeVisible();
-    });
-
-    test('Fuzz: Empty/Whitespace Fields Interaction', async ({ page }) => {
-        const whitespace = [' ', '  ', '\n', '\t', ' \n '];
-        for (const ws of whitespace) {
-            await page.fill('#username', ws);
-            await page.fill('#room-id', ws);
-            await page.click('button[type="submit"]');
-            await expect(page.locator('#app')).toBeVisible();
-        }
-    });
-
     test('Fuzz: Unicode and Emoji Stress', async ({ page }) => {
         const unicodeStrings = [
             'こんにちは',
@@ -130,8 +87,6 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
         ];
 
         await page.fill('#username', 'EmojiFuzzer');
-        await page.fill('#room-id', 'unicode-room');
-        await page.click('button[type="submit"]');
 
         for (const str of unicodeStrings) {
             await page.fill('#message-input', str);

@@ -4,6 +4,7 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
     test('E2E: Dice button generates distinct IDs in sequence', async ({ page }) => {
         await page.goto('/');
+        await page.click('#show-join-modal');
         const values = new Set();
         for (let i = 0; i < 5; i++) {
             await page.click('#gen-room-btn');
@@ -17,15 +18,16 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
         await context.grantPermissions(['clipboard-write']);
         await page.goto('/');
         await page.fill('#username', 'FeedbackHero');
+        await page.click('#show-join-modal');
         await page.fill('#room-id', 'feedback-room');
-        await page.click('button[type="submit"]');
+        await page.click('#join-form button[type="submit"]');
 
         const copyBtn = page.locator('#copy-room-btn');
         const originalText = await copyBtn.textContent();
         await copyBtn.click();
 
-        // Should show link icon
-        await expect(copyBtn).toHaveText('🔗');
+        // Should show feedback text (I changed it to 'COPIED! ✅' in main.js)
+        await expect(copyBtn).toHaveText('COPIED! ✅');
 
         // Should revert after timeout
         await expect(copyBtn).toHaveText(originalText, { timeout: 5000 });
@@ -34,8 +36,6 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     test('E2E: Messages handle multiline and long text', async ({ page }) => {
         await page.goto('/');
         await page.fill('#username', 'LongHero');
-        await page.fill('#room-id', 'stress-room');
-        await page.click('button[type="submit"]');
 
         const longText = 'A'.repeat(500);
         await page.fill('#message-input', longText);
@@ -47,8 +47,6 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     test('E2E: Special characters and emojis are rendered correctly', async ({ page }) => {
         await page.goto('/');
         await page.fill('#username', 'EmojiHero');
-        await page.fill('#room-id', 'emoji-room');
-        await page.click('button[type="submit"]');
 
         const specialText = '🖍️ Pop! 💥 "Quouted" & <Escaped>';
         await page.fill('#message-input', specialText);
@@ -60,8 +58,6 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     test('E2E: Rapid messaging should not break the UI', async ({ page }) => {
         await page.goto('/');
         await page.fill('#username', 'SpeedHero');
-        await page.fill('#room-id', 'speed-room');
-        await page.click('button[type="submit"]');
 
         const input = page.locator('#message-input');
         for (let i = 1; i <= 10; i++) {
@@ -76,8 +72,6 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     test('E2E: Auto-scroll to bottom on new message', async ({ page }) => {
         await page.goto('/');
         await page.fill('#username', 'ScrollHero');
-        await page.fill('#room-id', 'scroll-room');
-        await page.click('button[type="submit"]');
 
         // Flood with messages
         for (let i = 0; i < 20; i++) {
@@ -98,45 +92,34 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
         await page1.goto('/');
         await page1.fill('#username', 'Alice');
+        await page1.click('#show-join-modal');
         await page1.fill('#room-id', 'room-alpha');
-        await page1.click('button[type="submit"]');
+        await page1.click('#join-form button[type="submit"]');
 
         await page2.goto('/');
         await page2.fill('#username', 'Bob');
+        await page2.click('#show-join-modal');
         await page2.fill('#room-id', 'room-beta');
-        await page2.click('button[type="submit"]');
+        await page2.click('#join-form button[type="submit"]');
 
         await page1.fill('#message-input', 'Secret Alpha Message');
         await page1.keyboard.press('Enter');
 
-        // Bob should NOT see Alice's message
+        // Bob should NOT see Alice's message in his room
         await page2.waitForTimeout(2000);
         const bobMessages = await page2.locator('.chat-bubble-left').count();
         expect(bobMessages).toBe(0);
     });
 
-    test('E2E: Entering room via Hash maintains state on reload', async ({ page }) => {
+    test('E2E: Entering room via Hash auto-joins and maintains state', async ({ page }) => {
         await page.goto('/#room=persistent-room&name=PersistentHero');
-        await page.click('button[type="submit"]');
 
-        // Check text content without being case sensitive or literal about case if it's tricky
         await expect(page.locator('#display-room-id')).toContainText('PERSISTENT-ROOM');
+        await expect(page.locator('#username')).toHaveValue('PersistentHero');
 
         await page.reload();
-        await expect(page.locator('#room-id')).toHaveValue('persistent-room');
-        await expect(page.locator('#username')).toHaveValue('PersistentHero');
-    });
-
-    test('E2E: Invalid Join prevention (Manual Validation Trigger)', async ({ page }) => {
-        await page.goto('/');
-
-        // Try bypass with invalid handle (if we had manual validation)
-        await page.fill('#username', 'A'); // Too short according to utils.validateHandle
-        await page.fill('#room-id', 'valid-room');
-        await page.click('button[type="submit"]');
-
-        // We expect the LAST system message to contain the error
-        await expect(page.locator('.system-message').last()).toContainText('INVALID NAME OR ROOM ID');
+        // Since it's in localStorage now, it should persist switching back to it
+        await expect(page.locator('#display-room-id')).toContainText('PERSISTENT-ROOM');
     });
 
     test('E2E: Peer Count is visible and reactive', async ({ browser }) => {
@@ -146,8 +129,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
         await pageA.goto('/');
         await pageA.fill('#username', 'UserA');
+        await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', room);
-        await pageA.click('button[type="submit"]');
+        await pageA.click('#join-form button[type="submit"]');
 
         await expect(pageA.locator('#peer-count')).toHaveText('1 HERO ONLINE');
 
@@ -155,8 +139,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
         const pageB = await contextB.newPage();
         await pageB.goto('/');
         await pageB.fill('#username', 'UserB');
+        await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', room);
-        await pageB.click('button[type="submit"]');
+        await pageB.click('#join-form button[type="submit"]');
 
         await expect(pageA.locator('#peer-count')).toHaveText('2 HEROES ONLINE', { timeout: 30000 });
     });

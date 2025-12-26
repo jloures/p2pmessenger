@@ -6,21 +6,16 @@ test.describe('P2P Messenger Functional Tests', () => {
         await page.goto('/');
     });
 
-    test('messenger instance should be initialized on window', async ({ page }) => {
-        const isMessengerDefined = await page.evaluate(() => typeof window.messenger !== 'undefined');
-        expect(isMessengerDefined).toBe(true);
+    test('P2PMessenger class should be available on window', async ({ page }) => {
+        const isClassDefined = await page.evaluate(() => typeof window.P2PMessenger !== 'undefined');
+        expect(isClassDefined).toBe(true);
     });
 
-    test('should handle message state correctly without UI verification', async ({ page }) => {
-        await page.fill('#username', 'FunctionalUser');
-        await page.fill('#room-id', 'functional-test');
-        await page.click('button[type="submit"]');
-
-        // Wait for chat view to be active
-        await expect(page.locator('#chat-view')).toBeVisible();
-
+    test('should handle message state correctly using a new messenger instance', async ({ page }) => {
         const messageData = await page.evaluate(() => {
-            const msg = window.messenger.sendMessage('Hello logic!');
+            const m = new window.P2PMessenger('test-app');
+            m.myHandle = 'FunctionalUser';
+            const msg = m.sendMessage('Hello logic!');
             return msg;
         });
 
@@ -37,26 +32,29 @@ test.describe('P2P Messenger Functional Tests', () => {
 
         const roomName = `peer-logic-${Math.random().toString(36).substring(7)}`;
 
-        // Alice joins
         await pageA.goto('/');
-        await pageA.evaluate((rn) => {
-            window.messenger.join(rn, 'Alice');
-        }, roomName);
-
-        // Bob joins
         await pageB.goto('/');
-        await pageB.evaluate((rn) => {
-            window.messenger.join(rn, 'Bob');
+
+        // Initialize and join Alice
+        await pageA.evaluate((rn) => {
+            window.testMessenger = new window.P2PMessenger('test-app');
+            window.testMessenger.join(rn, 'Alice');
         }, roomName);
 
-        // Verify peer count in State for Alice (should see herself + Bob = 2)
+        // Initialize and join Bob
+        await pageB.evaluate((rn) => {
+            window.testMessenger = new window.P2PMessenger('test-app');
+            window.testMessenger.join(rn, 'Bob');
+        }, roomName);
+
+        // Verify peer count for Alice
         await expect.poll(async () => {
-            return await pageA.evaluate(() => window.messenger.getPeerCount());
+            return await pageA.evaluate(() => window.testMessenger.getPeerCount());
         }, { timeout: 30000 }).toBe(2);
 
-        // Verify peer count in State for Bob (should see herself + Alice = 2)
+        // Verify peer count for Bob
         await expect.poll(async () => {
-            return await pageB.evaluate(() => window.messenger.getPeerCount());
+            return await pageB.evaluate(() => window.testMessenger.getPeerCount());
         }, { timeout: 30000 }).toBe(2);
 
         await contextA.close();
@@ -71,30 +69,33 @@ test.describe('P2P Messenger Functional Tests', () => {
 
         const roomName = `msg-logic-${Math.random().toString(36).substring(7)}`;
 
-        // Setup Alice to listen for messages
         await pageA.goto('/');
+        await pageB.goto('/');
+
+        // Setup Alice
         await pageA.evaluate((rn) => {
             window.receivedMessages = [];
-            window.messenger.onMessage = (data) => window.receivedMessages.push(data);
-            window.messenger.join(rn, 'Alice');
+            window.testMessenger = new window.P2PMessenger('test-app');
+            window.testMessenger.onMessage = (data) => window.receivedMessages.push(data);
+            window.testMessenger.join(rn, 'Alice');
         }, roomName);
 
-        // Bob joins and sends message
-        await pageB.goto('/');
+        // Bob joins and sends
         await pageB.evaluate(async (rn) => {
-            window.messenger.join(rn, 'Bob');
+            window.testMessenger = new window.P2PMessenger('test-app');
+            window.testMessenger.join(rn, 'Bob');
         }, roomName);
 
-        // Wait for Bob to see 2 peers before sending
+        // Wait for connection
         await expect.poll(async () => {
-            return await pageB.evaluate(() => window.messenger.getPeerCount());
+            return await pageB.evaluate(() => window.testMessenger.getPeerCount());
         }, { timeout: 30000 }).toBe(2);
 
         await pageB.evaluate(() => {
-            window.messenger.sendMessage('Logic Test Message');
+            window.testMessenger.sendMessage('Logic Test Message');
         });
 
-        // Check if Alice's state received the message
+        // Check Alice
         await expect.poll(async () => {
             return await pageA.evaluate(() => window.receivedMessages.length);
         }, { timeout: 30000 }).toBeGreaterThan(0);

@@ -4,216 +4,302 @@ window.Buffer = Buffer;
 import { P2PMessenger } from './p2p.js';
 import * as utils from './utils.js';
 
-// 2. CONFIG
-const APP_ID = 'p2pmsg-v1';
+// 1. CONFIG
+const APP_ID = 'p2pmsg-v2';
 
-// 3. STATE
-const messenger = new P2PMessenger(APP_ID);
-let myHandle = '';
-let activeRoomId = '';
+// 2. STATE
+window.P2PMessenger = P2PMessenger;
+let messenger = null; // Will be initialized per room
+let myHandle = localStorage.getItem('p2p_handle') || '';
+let rooms = JSON.parse(localStorage.getItem('p2p_rooms')) || [
+  { id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true }
+];
+let activeRoomId = 'saved-messages';
+let roomMessages = JSON.parse(localStorage.getItem('p2p_messages')) || {}; // { roomId: [msgs] }
 
 // Expose for testing/debugging
-window.messenger = messenger;
 window.utils = utils;
 
-// 4. DOM ELEMENTS (ROBUST SELECTION)
-const getEl = (id) => {
-  const el = document.getElementById(id);
-  if (!el) console.warn(`Critical UI Element not found: #${id}`);
-  return el;
-};
+// 3. DOM ELEMENTS
+const getEl = (id) => document.getElementById(id);
 
-const views = {
-  join: getEl('join-view'),
-  chat: getEl('chat-view'),
-};
-
-const forms = {
-  join: getEl('join-form'),
-  chat: getEl('chat-form'),
-};
-
-const inputs = {
-  username: getEl('username'),
-  roomId: getEl('room-id'),
-  password: getEl('room-password'),
-  message: getEl('message-input'),
-};
-
-const display = {
-  roomName: getEl('display-room-id'),
+const els = {
+  sidebar: getEl('sidebar'),
+  sidebarToggle: getEl('sidebar-toggle'),
+  roomList: getEl('room-list'),
+  usernameInput: getEl('username'),
+  showJoinModal: getEl('show-join-modal'),
+  joinModal: getEl('join-modal'),
+  closeModal: getEl('close-modal'),
+  joinForm: getEl('join-form'),
+  roomIdInput: getEl('room-id'),
+  passwordInput: getEl('room-password'),
+  genRoomBtn: getEl('gen-room-btn'),
+  displayRoomId: getEl('display-room-id'),
   peerCount: getEl('peer-count'),
-  messages: getEl('messages-container'),
-  genBtn: getEl('gen-room-btn'),
+  messagesContainer: getEl('messages-container'),
+  chatForm: getEl('chat-form'),
+  messageInput: getEl('message-input'),
   leaveBtn: getEl('leave-btn'),
   copyBtn: getEl('copy-room-btn'),
 };
 
-// 5. GLOBAL ERROR TRACKING
-window.addEventListener('unhandledrejection', event => {
-  console.error('Unhandled rejection:', event.reason);
-  const reason = event.reason?.message || event.reason || 'Unknown error';
-  appendSystemMessage(`📡 Connection Error: ${reason}`);
-});
+// 4. INIT
+function init() {
+  els.usernameInput.value = myHandle;
+  renderRoomList();
+  switchRoom(activeRoomId);
+  setupEventListeners();
 
-window.onerror = function (msg, url, lineNo, columnNo, error) {
-  appendSystemMessage(`System Error: ${msg} [Line: ${lineNo}]`);
-  return false;
-};
-
-// 6. INITIALIZATION & UI EVENTS
-
-function updateVersionAndHash() {
-  const versionEl = document.getElementById('app-version');
-  if (versionEl && typeof APP_VERSION !== 'undefined') {
-    versionEl.textContent = APP_VERSION;
-  }
-
+  // Handle URL Hash if present for auto-join
   const params = utils.parseHashParams(window.location.hash);
-  if (params.room && inputs.roomId) inputs.roomId.value = params.room;
-  if (params.pass && inputs.password) inputs.password.value = params.pass;
-  if (params.name && inputs.username) inputs.username.value = params.name;
+  if (params.room) {
+    autoJoinFromParams(params);
+  }
 }
 
-updateVersionAndHash();
-window.addEventListener('load', updateVersionAndHash);
-window.addEventListener('hashchange', updateVersionAndHash);
+// 5. EVENT LISTENERS
+function setupEventListeners() {
+  els.sidebarToggle.addEventListener('click', () => {
+    els.sidebar.classList.toggle('open');
+  });
 
-// Dice Button Fix
-if (display.genBtn) {
-  display.genBtn.addEventListener('click', (e) => {
+  els.usernameInput.addEventListener('input', (e) => {
+    myHandle = e.target.value.trim();
+    localStorage.setItem('p2p_handle', myHandle);
+  });
+
+  els.showJoinModal.addEventListener('click', () => {
+    els.joinModal.classList.remove('hidden');
+  });
+
+  els.closeModal.addEventListener('click', () => {
+    els.joinModal.classList.add('hidden');
+  });
+
+  els.genRoomBtn.addEventListener('click', () => {
+    els.roomIdInput.value = utils.generateRoomId();
+  });
+
+  els.joinForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const randomId = utils.generateRoomId();
-    if (inputs.roomId) {
-      inputs.roomId.value = randomId;
-      console.log('Dice clicked: generated ' + randomId);
+    const id = els.roomIdInput.value.trim();
+    const pass = els.passwordInput.value.trim();
+
+    if (id) {
+      addRoom(id, id, pass);
+      els.joinModal.classList.add('hidden');
+      els.joinForm.reset();
+      switchRoom(id);
     }
   });
-}
 
-// Join Room Submit
-if (forms.join) {
-  forms.join.addEventListener('submit', async (e) => {
+  els.chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const handle = inputs.username.value.trim();
-    const roomName = inputs.roomId.value.trim();
-    const password = inputs.password.value.trim();
-
-    if (!utils.validateHandle(handle) || !utils.validateRoomId(roomName)) {
-      appendSystemMessage('Invalid name or room ID. Stay focused, hero!');
-      return;
-    }
-
-    myHandle = handle;
-    activeRoomId = roomName;
-
-    try {
-      enterChatView();
-      appendSystemMessage(`Connecting to room: ${roomName}...`);
-
-      messenger.onMessage = (data) => appendMessage(data, false);
-      messenger.onSystemMessage = (msg) => appendSystemMessage(msg);
-      messenger.onPeerUpdate = (count) => {
-        if (display.peerCount) {
-          display.peerCount.textContent = `${count} HERO${count !== 1 ? 'ES' : ''} ONLINE`;
-        }
-      };
-
-      messenger.join(roomName, handle, password);
-
-      appendSystemMessage(`Looking for peers via trackers...`);
-      if (password) {
-        appendSystemMessage('🛡️ E2EE Encryption active.');
-      }
-    } catch (err) {
-      console.error(err);
-      appendSystemMessage(`Init Error: ${err.message}`);
-    }
-  });
-}
-
-// Copy Link
-if (display.copyBtn) {
-  display.copyBtn.addEventListener('click', () => {
-    const passValue = inputs.password ? inputs.password.value : '';
-    const shareUrl = `${window.location.origin}${window.location.pathname}#room=${activeRoomId}&pass=${passValue}`;
-    navigator.clipboard.writeText(shareUrl);
-
-    const originalText = display.copyBtn.textContent;
-    display.copyBtn.textContent = '🔗';
-    setTimeout(() => {
-      display.copyBtn.textContent = originalText;
-    }, 2000);
-  });
-}
-
-if (display.leaveBtn) {
-  display.leaveBtn.addEventListener('click', () => {
-    messenger.leave();
-    window.location.reload();
-  });
-}
-
-// Send Message
-if (forms.chat) {
-  forms.chat.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const text = inputs.message.value.trim();
+    const text = els.messageInput.value.trim();
     if (!text) return;
 
-    const msg = messenger.sendMessage(text);
-    appendMessage(msg, true);
-    inputs.message.value = '';
+    handleSendMessage(text);
+    els.messageInput.value = '';
+  });
+
+  els.leaveBtn.addEventListener('click', () => {
+    if (activeRoomId === 'saved-messages') return;
+    removeRoom(activeRoomId);
+  });
+
+  els.copyBtn.addEventListener('click', () => {
+    const room = rooms.find(r => r.id === activeRoomId);
+    if (!room || room.isPrivate) return;
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}#room=${room.id}&pass=${room.password || ''}`;
+    navigator.clipboard.writeText(shareUrl);
+
+    const originalText = els.copyBtn.textContent;
+    els.copyBtn.textContent = 'COPIED! ✅';
+    setTimeout(() => els.copyBtn.textContent = originalText, 2000);
   });
 }
 
-// 8. HELPERS
+// 6. ROOM MANAGEMENT
+function renderRoomList() {
+  els.roomList.innerHTML = '';
+  rooms.forEach(room => {
+    const btn = document.createElement('button');
+    btn.className = `room-item ${activeRoomId === room.id ? 'active' : ''}`;
+    btn.innerHTML = `
+      <span class="room-icon">${room.icon || '💬'}</span>
+      <div class="flex-1 min-w-0">
+        <div class="room-name truncate">${room.name}</div>
+        <div class="text-[10px] opacity-60 truncate">${room.id}</div>
+      </div>
+      ${!room.isPrivate ? `<button class="rename-btn text-xs opacity-0 group-hover:opacity-100" data-id="${room.id}">✏️</button>` : ''}
+    `;
 
-function enterChatView() {
-  const app = document.getElementById('app');
-  if (app) {
-    app.classList.remove('max-w-sm');
-    app.classList.add('max-w-6xl', 'h-[92vh]', 'flex');
-  }
-  if (views.join) views.join.classList.add('hidden');
-  if (views.chat) views.chat.classList.remove('hidden');
-  if (display.roomName) display.roomName.textContent = `#${activeRoomId.toUpperCase()}`;
+    btn.addEventListener('click', (e) => {
+      if (e.target.classList.contains('rename-btn')) {
+        const newName = prompt('Enter new name for room:', room.name);
+        if (newName) renameRoom(room.id, newName);
+        return;
+      }
+      switchRoom(room.id);
+      if (window.innerWidth < 640) els.sidebar.classList.remove('open');
+    });
+
+    els.roomList.appendChild(btn);
+  });
 }
 
-function appendMessage(data, isOwn) {
-  if (!display.messages) return;
+function addRoom(id, name, password = '') {
+  if (rooms.find(r => r.id === id)) return;
+  rooms.push({ id, name, password, icon: '💬' });
+  saveRooms();
+  renderRoomList();
+}
 
+function removeRoom(id) {
+  rooms = rooms.filter(r => r.id !== id);
+  saveRooms();
+  renderRoomList();
+  switchRoom('saved-messages');
+}
+
+function renameRoom(id, newName) {
+  const room = rooms.find(r => r.id === id);
+  if (room) {
+    room.name = newName;
+    saveRooms();
+    renderRoomList();
+  }
+}
+
+function saveRooms() {
+  localStorage.setItem('p2p_rooms', JSON.stringify(rooms));
+}
+
+// 7. CHAT LOGIC
+async function switchRoom(id) {
+  if (messenger) {
+    messenger.leave();
+    messenger = null;
+  }
+
+  activeRoomId = id;
+  const room = rooms.find(r => r.id === id);
+
+  els.displayRoomId.textContent = (room?.name || id).toUpperCase();
+
+  const idSubtitle = (room && room.name.toLowerCase() !== room.id.toLowerCase()) ? `ID: ${room.id}` : '';
+  const baseStatus = room?.isPrivate ? 'SAVED MESSAGES' : 'CONNECTING...';
+  els.peerCount.textContent = idSubtitle ? `${idSubtitle} • ${baseStatus}` : baseStatus;
+
+  // Clear messages container and load history
+  els.messagesContainer.innerHTML = '';
+  const history = roomMessages[id] || [];
+  history.forEach(msg => appendMessageUI(msg, msg.isOwn));
+
+  renderRoomList();
+
+  if (room && !room.isPrivate) {
+    initP2P(room);
+  }
+}
+
+function initP2P(room) {
+  if (!myHandle) {
+    appendSystemMessage('Please set a hero name in the sidebar first!');
+  }
+
+  messenger = new P2PMessenger(APP_ID);
+  window.messenger = messenger;
+
+  messenger.onMessage = (data) => {
+    saveAndAppendMessage(activeRoomId, data, false);
+  };
+
+  messenger.onSystemMessage = (msg) => appendSystemMessage(msg);
+
+  messenger.onPeerUpdate = (count) => {
+    const idSubtitle = (room && room.name.toLowerCase() !== room.id.toLowerCase()) ? `ID: ${room.id} • ` : '';
+    els.peerCount.textContent = `${idSubtitle}${count} HERO${count !== 1 ? 'ES' : ''} ONLINE`;
+  };
+
+  messenger.join(room.id, myHandle || 'Anonymous Hero', room.password);
+  // Initial count update
+  const idSubtitle = (room && room.name.toLowerCase() !== room.id.toLowerCase()) ? `ID: ${room.id} • ` : '';
+  els.peerCount.textContent = `${idSubtitle}1 HERO ONLINE`;
+}
+
+function handleSendMessage(text) {
+  const isPrivate = activeRoomId === 'saved-messages';
+  const msg = {
+    text,
+    sender: myHandle || 'You',
+    timestamp: Date.now(),
+    isOwn: true
+  };
+
+  if (!isPrivate && messenger) {
+    messenger.sendMessage(text);
+  }
+
+  saveAndAppendMessage(activeRoomId, msg, true);
+}
+
+function saveAndAppendMessage(roomId, data, isOwn) {
+  if (!roomMessages[roomId]) roomMessages[roomId] = [];
+
+  const msgToSave = { ...data, isOwn };
+  roomMessages[roomId].push(msgToSave);
+
+  // Keep only last 50 messages per room to save localStorage space
+  if (roomMessages[roomId].length > 50) roomMessages[roomId].shift();
+
+  localStorage.setItem('p2p_messages', JSON.stringify(roomMessages));
+
+  if (activeRoomId === roomId) {
+    appendMessageUI(data, isOwn);
+  }
+}
+
+function appendMessageUI(data, isOwn) {
   const div = document.createElement('div');
   div.className = `flex flex-col ${isOwn ? 'items-end ml-auto' : 'items-start'} max-w-[85%] w-full chat-bubble-anim`;
 
   const time = utils.formatTime(data.timestamp);
+  const sender = isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero');
 
   div.innerHTML = `
-    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-sm font-bold text-[#1A1A1A]">${isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero')}</span>
+    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-[10px] font-black uppercase text-[#1A1A1A]/60">${sender}</span>
     <div class="p-3 ${isOwn ? 'bg-[#4D96FF] chat-bubble-right text-white border-4 border-[#1A1A1A]' : 'bg-white chat-bubble-left text-[#1A1A1A]'} font-bold">
       ${utils.escapeHtml(data.text || '')}
-      <span class="message-meta text-[10px] mt-1">${time}</span>
+      <span class="message-meta text-[10px] mt-1 opacity-60">${time}</span>
     </div>
   `;
 
-  display.messages.appendChild(div);
-  scrollToBottom();
+  els.messagesContainer.appendChild(div);
+  els.messagesContainer.scrollTop = els.messagesContainer.scrollHeight;
 }
 
 function appendSystemMessage(text) {
-  if (!display.messages) return;
   const div = document.createElement('div');
   div.className = 'system-message chat-bubble-anim';
   div.textContent = text.toUpperCase();
-  display.messages.appendChild(div);
-  scrollToBottom();
+  els.messagesContainer.appendChild(div);
+  els.messagesContainer.scrollTop = els.messagesContainer.scrollHeight;
 }
 
-function scrollToBottom() {
-  if (display.messages) {
-    display.messages.scrollTop = display.messages.scrollHeight;
+async function autoJoinFromParams(params) {
+  if (params.room) {
+    addRoom(params.room, params.room, params.pass || '');
+    if (params.name && !myHandle) {
+      myHandle = params.name;
+      els.usernameInput.value = myHandle;
+      localStorage.setItem('p2p_handle', myHandle);
+    }
+    switchRoom(params.room);
   }
 }
 
-
-
+// Start the app
+init();
