@@ -2,6 +2,7 @@ import { Buffer } from 'https://esm.sh/buffer@6.0.3';
 window.Buffer = Buffer;
 
 import { P2PMessenger } from './p2p.js';
+import * as utils from './utils.js';
 
 // 2. CONFIG
 const APP_ID = 'p2pmsg-v1';
@@ -13,6 +14,7 @@ let activeRoomId = '';
 
 // Expose for testing/debugging
 window.messenger = messenger;
+window.utils = utils;
 
 // 4. DOM ELEMENTS (ROBUST SELECTION)
 const getEl = (id) => {
@@ -67,12 +69,10 @@ function updateVersionAndHash() {
     versionEl.textContent = APP_VERSION;
   }
 
-  if (window.location.hash) {
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    if (params.has('room') && inputs.roomId) inputs.roomId.value = params.get('room');
-    if (params.has('pass') && inputs.password) inputs.password.value = params.get('pass');
-    if (params.has('name') && inputs.username) inputs.username.value = params.get('name');
-  }
+  const params = utils.parseHashParams(window.location.hash);
+  if (params.room && inputs.roomId) inputs.roomId.value = params.room;
+  if (params.pass && inputs.password) inputs.password.value = params.pass;
+  if (params.name && inputs.username) inputs.username.value = params.name;
 }
 
 updateVersionAndHash();
@@ -83,7 +83,7 @@ window.addEventListener('hashchange', updateVersionAndHash);
 if (display.genBtn) {
   display.genBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    const randomId = 'room-' + Math.random().toString(36).substring(2, 9);
+    const randomId = utils.generateRoomId();
     if (inputs.roomId) {
       inputs.roomId.value = randomId;
       console.log('Dice clicked: generated ' + randomId);
@@ -99,7 +99,10 @@ if (forms.join) {
     const roomName = inputs.roomId.value.trim();
     const password = inputs.password.value.trim();
 
-    if (!handle || !roomName) return;
+    if (!utils.validateHandle(handle) || !utils.validateRoomId(roomName)) {
+      appendSystemMessage('Invalid name or room ID. Stay focused, hero!');
+      return;
+    }
 
     myHandle = handle;
     activeRoomId = roomName;
@@ -169,7 +172,7 @@ if (forms.chat) {
 function enterChatView() {
   if (views.join) views.join.classList.add('hidden');
   if (views.chat) views.chat.classList.remove('hidden');
-  if (display.roomName) display.roomName.textContent = `#${activeRoomId}`;
+  if (display.roomName) display.roomName.textContent = `#${activeRoomId.toUpperCase()}`;
 }
 
 function appendMessage(data, isOwn) {
@@ -178,12 +181,12 @@ function appendMessage(data, isOwn) {
   const div = document.createElement('div');
   div.className = `flex flex-col ${isOwn ? 'items-end ml-auto' : 'items-start'} max-w-[90%] w-full`;
 
-  const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const time = utils.formatTime(data.timestamp);
 
   div.innerHTML = `
-    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-xs font-black text-[#1A1A1A] uppercase">${isOwn ? 'You' : (data.sender || 'Hero')}</span>
+    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-xs font-black text-[#1A1A1A] uppercase">${isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero')}</span>
     <div class="${isOwn ? 'chat-bubble-right' : 'chat-bubble-left'}">
-      ${escapeHtml(data.text || '')}
+      ${utils.escapeHtml(data.text || '')}
       <span class="message-meta">${time}</span>
     </div>
   `;
@@ -196,7 +199,7 @@ function appendSystemMessage(text) {
   if (!display.messages) return;
   const div = document.createElement('div');
   div.className = 'system-message';
-  div.textContent = text;
+  div.textContent = text.toUpperCase();
   display.messages.appendChild(div);
   scrollToBottom();
 }
@@ -207,8 +210,5 @@ function scrollToBottom() {
   }
 }
 
-function escapeHtml(text) {
-  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-  return text.replace(/[&<>"']/g, function (m) { return map[m]; });
-}
+
 

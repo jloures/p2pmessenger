@@ -30,7 +30,7 @@ test.describe('P2P Messenger UI Tests', () => {
 
         await expect(page.locator('#chat-view')).toBeVisible();
         await expect(page.locator('#join-view')).toBeHidden();
-        await expect(page.locator('#display-room-id')).toHaveText('#test-room');
+        await expect(page.locator('#display-room-id')).toHaveText('#TEST-ROOM');
     });
 
     test('should copy room link to clipboard', async ({ page, context }) => {
@@ -77,7 +77,7 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.keyboard.press('Enter');
 
         // There should be no user messages yet (only the system message)
-        const messages = page.locator('.message-bubble');
+        const messages = page.locator('[class^="chat-bubble-"]');
         await expect(messages).toHaveCount(0);
     });
 
