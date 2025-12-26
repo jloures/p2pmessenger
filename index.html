@@ -5,95 +5,107 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>p2pmessenger | Secure P2P Messenger</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>p2pmessenger | Cartoon Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
 </head>
 
-<body>
-  <!-- Background Elements -->
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
-  <div class="glass-overlay"></div>
+<body class="h-screen flex items-center justify-center p-4">
+  <div id="app" class="w-full max-w-lg h-[90vh] flex flex-col bg-white toon-border overflow-hidden relative">
 
-  <div id="app">
     <!-- Login / Join View -->
-    <div id="join-view" class="view-container">
-      <div class="hero-card glass-panel fade-in-up">
-        <div class="logo-area">
-          <h1>p2pmessenger</h1>
-          <p class="subtitle">Serverless. Private. Pure P2P.</p>
-          <span id="app-version" class="version-tag">v0.0.0</span>
-        </div>
+    <div id="join-view" class="absolute inset-0 z-20 flex flex-col bg-white">
+      <header class="bg-[#FFD93D] p-6 border-b-6 border-[#1A1A1A]">
+        <h1 class="text-4xl text-white tracking-wider text-center">P2P MESSENGER!</h1>
+        <p class="text-[#1A1A1A] font-bold text-center mt-2 lowercase">serverless. private. pure p2p.</p>
+      </header>
 
-        <form id="join-form">
-          <div class="input-group">
-            <label for="username">Identity</label>
-            <input type="text" id="username" placeholder="Choose a nickname..." required autocomplete="off" />
+      <main class="flex-1 p-6 space-y-6 overflow-y-auto bg-[#6BCB77]/10">
+        <form id="join-form" class="space-y-6">
+          <div class="space-y-2">
+            <label for="username" class="block font-black text-[#1A1A1A] ml-1 uppercase">Who are you?</label>
+            <input type="text" id="username" placeholder="Enter hero name..." required autocomplete="off"
+              class="w-full p-4 rounded-2xl border-4 border-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#4D96FF] outline-none" />
           </div>
 
-          <div class="input-group">
-            <label for="room-id">Frequency</label>
-            <div class="input-with-action">
-              <input type="text" id="room-id" placeholder="Enter room name..." required autocomplete="off" />
-              <button type="button" id="gen-room-btn" class="icon-btn" title="Generate Random">🎲</button>
+          <div class="space-y-2">
+            <label for="room-id" class="block font-black text-[#1A1A1A] ml-1 uppercase">Frequency (Room)</label>
+            <div class="flex gap-2">
+              <input type="text" id="room-id" placeholder="Room name..." required autocomplete="off"
+                class="flex-1 p-4 rounded-2xl border-4 border-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#4D96FF] outline-none" />
+              <button type="button" id="gen-room-btn"
+                class="bg-[#FFD93D] p-4 rounded-2xl border-4 border-[#1A1A1A] font-black text-2xl toon-button"
+                title="Generate Random">🎲</button>
             </div>
           </div>
 
-          <div class="input-group">
-            <label for="room-password">Secret Key (E2EE)</label>
-            <input type="password" id="room-password" placeholder="Optional encryption key..." autocomplete="off" />
-            <small class="input-help">Only peers with this key can decrypt messages.</small>
+          <div class="space-y-2">
+            <label for="room-password" class="block font-black text-[#1A1A1A] ml-1 uppercase">Secret Key
+              (optional)</label>
+            <input type="password" id="room-password" placeholder="E2EE key..." autocomplete="off"
+              class="w-full p-4 rounded-2xl border-4 border-[#1A1A1A] font-bold focus:ring-4 focus:ring-[#4D96FF] outline-none" />
           </div>
 
-          <button type="submit" class="cta-btn">Initialize Link</button>
+          <div class="pt-4">
+            <button type="submit"
+              class="w-full bg-[#FF6B6B] text-white p-5 rounded-2xl border-4 border-[#1A1A1A] shadow-[6px_6px_0px_#1A1A1A] toon-button font-black text-2xl tracking-widest">
+              INITIALIZE LINK!
+            </button>
+          </div>
         </form>
-      </div>
+      </main>
+
+      <footer class="p-4 bg-[#FFD93D] border-t-6 border-[#1A1A1A] text-center">
+        <span id="app-version" class="version-tag">v1.0.0</span>
+      </footer>
     </div>
 
     <!-- Chat View -->
-    <div id="chat-view" class="view-container hidden">
-      <div class="chat-interface glass-panel slide-in">
-
-        <!-- Sidebar / Header (Mobile friendly) -->
-        <header class="chat-header">
-          <div class="room-info">
-            <span class="room-label">Frequency</span>
-            <div class="room-display-wrapper">
-              <h2 id="display-room-id">#general</h2>
-              <button id="copy-room-btn" class="icon-btn-small" title="Copy Room ID">📋</button>
+    <div id="chat-view" class="hidden flex flex-col h-full w-full">
+      <header class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-[#FF6B6B] rounded-full border-4 border-[#1A1A1A]"></div>
+          <div>
+            <h2 id="display-room-id" class="text-xl text-white">#GENERAL</h2>
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 bg-[#6BCB77] rounded-full border-2 border-[#1A1A1A]"></span>
+              <span id="peer-count" class="text-[10px] font-black uppercase text-[#1A1A1A]">1 Peer</span>
             </div>
           </div>
-          <div class="peer-status">
-            <span class="status-dot"></span>
-            <span id="peer-count">1 Peer</span>
-          </div>
-          <button id="leave-btn" class="secondary-btn">Disconnect</button>
-        </header>
-
-        <!-- Messages Area -->
-        <div id="messages-container" class="messages-area">
-          <div class="system-message">
-            <p>Welcome to the encrypted frequency. Waiting for peers...</p>
-          </div>
         </div>
+        <div class="flex gap-2">
+          <button id="copy-room-btn"
+            class="bg-white p-2 px-3 rounded-xl border-4 border-[#1A1A1A] font-black text-sm toon-button"
+            title="Copy Room ID">COPY 📋</button>
+          <button id="leave-btn"
+            class="bg-[#FF6B6B] text-white p-2 px-3 rounded-xl border-4 border-[#1A1A1A] font-black text-sm toon-button">EXIT
+            ❌</button>
+        </div>
+      </header>
 
-        <!-- Input Area -->
-        <form id="chat-form" class="input-area">
-          <input type="text" id="message-input" placeholder="Broadcast a message..." autocomplete="off" />
-          <button type="submit" class="send-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
+      <!-- Messages Area -->
+      <main id="messages-container"
+        class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-[#6BCB77]/10 scroll-custom">
+        <div class="system-message">
+          <p>WELCOME TO THE ENCRYPTED COMIC. WAITING FOR PEERS...</p>
+        </div>
+      </main>
+
+      <!-- Input Area -->
+      <footer class="p-4 bg-[#FFD93D] border-t-6 border-[#1A1A1A]">
+        <form id="chat-form" class="flex gap-2">
+          <input type="text" id="message-input" placeholder="Type a super message..." autocomplete="off"
+            class="flex-1 p-3 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
+          <button type="submit"
+            class="bg-[#FF6B6B] text-white px-6 py-2 rounded-xl border-4 border-[#1A1A1A] toon-button font-transparent font-black text-lg">
+            GO!
           </button>
         </form>
-      </div>
+      </footer>
     </div>
+
   </div>
 
   <script type="module" src="./main.js"></script>

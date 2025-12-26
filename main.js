@@ -176,13 +176,16 @@ function appendMessage(data, isOwn) {
   if (!display.messages) return;
 
   const div = document.createElement('div');
-  div.className = `message-bubble ${isOwn ? 'message-own' : 'message-peer'}`;
+  div.className = `flex flex-col ${isOwn ? 'items-end ml-auto' : 'items-start'} max-w-[90%] w-full`;
+
   const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   div.innerHTML = `
-    <span class="sender-name">${isOwn ? 'You' : (data.sender || 'Peer')}</span>
-    ${escapeHtml(data.text || '')}
-    <span class="message-meta">${time}</span>
+    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-xs font-black text-[#1A1A1A] uppercase">${isOwn ? 'You' : (data.sender || 'Hero')}</span>
+    <div class="${isOwn ? 'chat-bubble-right' : 'chat-bubble-left'}">
+      ${escapeHtml(data.text || '')}
+      <span class="message-meta">${time}</span>
+    </div>
   `;
 
   display.messages.appendChild(div);
