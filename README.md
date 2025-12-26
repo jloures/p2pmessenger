@@ -42,15 +42,14 @@
 
 ### Deployment
 
-The app is ready to be deployed to static hosting services like Netlify or Vercel.
+The app is ready for any static hosting provider.
 
 1. **Build the production assets**:
    ```bash
    npm run build
    ```
 2. **Deploy the `dist/` folder**:
-   - Drag and drop the `dist/` folder to [Netlify Drop](https://app.netlify.com/drop).
-   - Or use the Netlify CLI: `npx netlify deploy --prod --dir=dist`
+   Upload the contents of the `dist/` folder to your favorite host (e.g., GitHub Pages, Cloudflare Pages, S3).
 
 ## 🧪 How to Chat
 

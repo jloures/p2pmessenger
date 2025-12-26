@@ -33,9 +33,6 @@ yarn-error.log*
 # Vite
 .vite
 
-# Local Netlify folder
-.netlify
-
 # IDEs
 .vscode/
 .idea/
