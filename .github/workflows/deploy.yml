@@ -22,8 +22,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Job 1: Run UI Tests
-  test:
+  # Job 1: Core Connectivity & Logic Tests
+  test-core:
+    name: Core Integration Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,12 +38,32 @@ jobs:
         run: npm install
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - name: Run Tests
-        run: npm test
+      - name: Run Core Tests
+        run: npm run test:core
 
-  # Job 2: Build and Deploy (only if test passes)
+  # Job 2: UI & User Experience Tests
+  test-ui:
+    name: UI E2E Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run UI Tests
+        run: npm run test:ui
+
+  # Job 3: Build and Deploy (only if BOTH test suites pass)
   deploy:
-    needs: test
+    name: Deploy to Production
+    needs: [test-core, test-ui]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

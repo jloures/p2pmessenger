@@ -8,7 +8,9 @@
         "build": "vite build",
         "preview": "vite preview",
         "test": "playwright test",
-        "test:ui": "playwright test --ui"
+        "test:ui": "playwright test tests/ui.spec.js",
+        "test:core": "playwright test tests/functional.spec.js",
+        "test:report": "playwright show-report"
     },
     "devDependencies": {
         "@playwright/test": "^1.57.0",
