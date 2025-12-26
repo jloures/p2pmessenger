@@ -1,8 +1,8 @@
-# 🌌 p2pmsg
+# 🌌 p2pmessenger
 
-**p2pmsg** is a serverless, private, and purely peer-to-peer (P2P) messenger. It allows people to meet online and chat in real-time without a central server, ensuring high privacy and low latency.
+**p2pmessenger** is a serverless, private, and purely peer-to-peer (P2P) messenger. It allows people to meet online and chat in real-time without a central server, ensuring high privacy and low latency.
 
-![p2pmsg Preview](https://via.placeholder.com/800x450.png?text=p2pmsg+Glassmorphism+Interface)
+![p2pmessenger Preview](https://jloures.github.io/p2pmessenger/)
 
 ## ✨ Features
 
@@ -64,7 +64,7 @@ The app is ready to be deployed to static hosting services like Netlify or Verce
 
 - All WebRTC traffic is encrypted via DTLS/SRTP.
 - When a **Secret Key** is used, messages are encrypted at the application layer using AES-GCM before being transmitted.
-- **p2pmsg** never sees, stores, or touches your messages.
+- **p2pmessenger** never sees, stores, or touches your messages.
 
 ---
 Built with ❤️ for a more private web.

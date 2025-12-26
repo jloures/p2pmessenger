@@ -65,21 +65,8 @@ window.onerror = function (msg, url, lineNo, columnNo, error) {
 
 // 6. INITIALIZATION & UI EVENTS
 
-// Dice Button Fix
-if (display.genBtn) {
-  display.genBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    const randomId = 'room-' + Math.random().toString(36).substring(2, 9);
-    if (inputs.roomId) {
-      inputs.roomId.value = randomId;
-      console.log('Dice clicked: generated ' + randomId);
-    }
-  });
-}
-
-// Auto-fill from URL hash
-window.addEventListener('DOMContentLoaded', () => {
-  // Update Version
+// Update Version
+function updateVersionAndHash() {
   const versionEl = document.getElementById('app-version');
   if (versionEl && typeof APP_VERSION !== 'undefined') {
     versionEl.textContent = APP_VERSION;
@@ -91,7 +78,24 @@ window.addEventListener('DOMContentLoaded', () => {
     if (params.has('pass') && inputs.password) inputs.password.value = params.get('pass');
     if (params.has('name') && inputs.username) inputs.username.value = params.get('name');
   }
-});
+}
+
+// Run immediately and also on load to be safe
+updateVersionAndHash();
+window.addEventListener('load', updateVersionAndHash);
+window.addEventListener('hashchange', updateVersionAndHash);
+
+// Dice Button Fix
+if (display.genBtn) {
+  display.genBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const randomId = 'room-' + Math.random().toString(36).substring(2, 9);
+    if (inputs.roomId) {
+      inputs.roomId.value = randomId;
+      console.log('Dice clicked: generated ' + randomId);
+    }
+  });
+}
 
 // Join Room Submit
 if (forms.join) {

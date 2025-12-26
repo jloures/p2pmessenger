@@ -58,4 +58,69 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.click('#leave-btn');
         await expect(page.locator('#join-view')).toBeVisible();
     });
+
+    test('should auto-fill fields from URL hash parameters', async ({ page }) => {
+        await page.goto('/#room=secret-base&pass=1234&name=AgentX');
+
+        await expect(page.locator('#room-id')).toHaveValue('secret-base');
+        await expect(page.locator('#room-password')).toHaveValue('1234');
+        await expect(page.locator('#username')).toHaveValue('AgentX');
+    });
+
+    test('should prevent sending empty messages', async ({ page }) => {
+        await page.fill('#username', 'TestUser');
+        await page.fill('#room-id', 'test-room');
+        await page.click('button[type="submit"]');
+
+        const messageInput = page.locator('#message-input');
+        await messageInput.fill('   ');
+        await page.keyboard.press('Enter');
+
+        // There should be no user messages yet (only the system message)
+        const messages = page.locator('.message-bubble');
+        await expect(messages).toHaveCount(0);
+    });
+
+    test('should simulate a two-user interaction', async ({ browser }) => {
+        // Session A
+        const contextA = await browser.newContext();
+        const pageA = await contextA.newPage();
+        await pageA.goto('/');
+        await pageA.fill('#username', 'Alice');
+        await pageA.fill('#room-id', 'p2p-test-room');
+        await pageA.click('button[type="submit"]');
+
+        // Session B
+        const contextB = await browser.newContext();
+        const pageB = await contextB.newPage();
+        await pageB.goto('/');
+        await pageB.fill('#username', 'Bob');
+        await pageB.fill('#room-id', 'p2p-test-room');
+        await pageB.click('button[type="submit"]');
+
+        // Both should reach chat view
+        await expect(pageA.locator('#chat-view')).toBeVisible();
+        await expect(pageB.locator('#chat-view')).toBeVisible();
+
+        // Wait for both to see "2 Peers" (themselves + the other)
+        await expect(pageA.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
+        await expect(pageB.locator('#peer-count')).toHaveText('2 Peers', { timeout: 30000 });
+
+        // Alice sends a message
+        await pageA.fill('#message-input', 'Hello from Alice');
+        await pageA.keyboard.press('Enter');
+
+        // Verify Bob sees it (Alice's message should appear in Bob's view as a peer message)
+        await expect(pageB.locator('.message-peer')).toContainText('Hello from Alice', { timeout: 30000 });
+
+        // Bob replies
+        await pageB.fill('#message-input', 'Hi Alice, I am Bob');
+        await pageB.keyboard.press('Enter');
+
+        // Verify Alice sees it
+        await expect(pageA.locator('.message-peer')).toContainText('Hi Alice, I am Bob', { timeout: 30000 });
+
+        await contextA.close();
+        await contextB.close();
+    });
 });
