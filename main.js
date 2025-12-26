@@ -79,6 +79,12 @@ if (display.genBtn) {
 
 // Auto-fill from URL hash
 window.addEventListener('DOMContentLoaded', () => {
+  // Update Version
+  const versionEl = document.getElementById('app-version');
+  if (versionEl && typeof APP_VERSION !== 'undefined') {
+    versionEl.textContent = APP_VERSION;
+  }
+
   if (window.location.hash) {
     const params = new URLSearchParams(window.location.hash.substring(1));
     if (params.has('room') && inputs.roomId) inputs.roomId.value = params.get('room');

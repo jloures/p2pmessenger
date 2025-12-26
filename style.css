@@ -146,6 +146,15 @@ body {
   font-size: 1.1rem;
 }
 
+.version-tag {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  opacity: 0.4;
+  margin-top: 4px;
+  display: inline-block;
+  font-family: monospace;
+}
+
 .input-group {
   display: flex;
   flex-direction: column;
