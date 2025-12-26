@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether | P2P Messenger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <!-- Background Elements -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="glass-overlay"></div>
+
+  <div id="app">
+    <!-- Login / Join View -->
+    <div id="join-view" class="view-container">
+      <div class="hero-card glass-panel fade-in-up">
+        <div class="logo-area">
+          <h1>Aether</h1>
+          <p class="subtitle">Serverless. Private. Pure P2P.</p>
+        </div>
+
+        <form id="join-form">
+          <div class="input-group">
+            <label for="username">Identity</label>
+            <input type="text" id="username" placeholder="Choose a handle..." required autocomplete="off" />
+          </div>
+
+          <div class="input-group">
+            <label for="room-id">Frequency</label>
+            <div class="input-with-action">
+              <input type="text" id="room-id" placeholder="Enter room name..." required autocomplete="off" />
+              <button type="button" id="gen-room-btn" class="icon-btn" title="Generate Random">🎲</button>
+            </div>
+          </div>
+
+          <button type="submit" class="cta-btn">Initialize Link</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Chat View -->
+    <div id="chat-view" class="view-container hidden">
+      <div class="chat-interface glass-panel slide-in">
+
+        <!-- Sidebar / Header (Mobile friendly) -->
+        <header class="chat-header">
+          <div class="room-info">
+            <span class="room-label">Frequency</span>
+            <div class="room-display-wrapper">
+              <h2 id="display-room-id">#general</h2>
+              <button id="copy-room-btn" class="icon-btn-small" title="Copy Room ID">📋</button>
+            </div>
+          </div>
+          <div class="peer-status">
+            <span class="status-dot"></span>
+            <span id="peer-count">1 Peer</span>
+          </div>
+          <button id="leave-btn" class="secondary-btn">Disconnect</button>
+        </header>
+
+        <!-- Messages Area -->
+        <div id="messages-container" class="messages-area">
+          <div class="system-message">
+            <p>Welcome to the encrypted frequency. Waiting for peers...</p>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <form id="chat-form" class="input-area">
+          <input type="text" id="message-input" placeholder="Broadcast a message..." autocomplete="off" />
+          <button type="submit" class="send-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+
+</html>
