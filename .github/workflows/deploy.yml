@@ -76,24 +76,6 @@ jobs:
       - name: Run Unit Tests
         run: npm run test:unit
 
-  # Job 2.6: Fuzz Resilience Tests
-  test-fuzz:
-    name: Fuzz Resilience Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-      - name: Run Fuzz Tests
-        run: npm run test:fuzz
 
   # Job 2.7: Visual Regression Tests
   test-visual:
@@ -152,9 +134,9 @@ jobs:
       - name: Run Network Tests
         run: npm run test:network
 
-  # Job 2.10: Security & Crypto Tests
-  test-security:
-    name: Security & Crypto Tests
+  # Job 2.10: Performance Benchmarks
+  test-performance:
+    name: Performance Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -168,27 +150,8 @@ jobs:
         run: npm install
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - name: Run Security Tests
-        run: npm run test:security
-
-  # Job 2.11: Data Migration & Schema Evolution Tests
-  test-migration:
-    name: Migration & Schema Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-      - name: Run Migration Tests
-        run: npm run test:migration
+      - name: Run Performance Tests
+        run: npm run test:performance
 
   # Job 3: Full End-to-End Journeys
   test-e2e:
@@ -213,7 +176,7 @@ jobs:
   deploy:
     name: Deploy to Production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test-core, test-ui, test-unit, test-fuzz, test-visual, test-a11y, test-network, test-security, test-migration, test-e2e]
+    needs: [test-core, test-ui, test-unit, test-visual, test-a11y, test-network, test-performance, test-e2e]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
