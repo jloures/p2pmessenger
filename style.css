@@ -28,7 +28,8 @@ body {
 h1,
 h2 {
   font-family: 'Fredoka One', cursive;
-  -webkit-text-stroke: 1.5px var(--toon-black);
+  color: var(--toon-black);
+  -webkit-text-stroke: 0.5px var(--toon-black);
   paint-order: stroke fill;
   text-transform: uppercase;
   letter-spacing: 0.05em;
