@@ -74,10 +74,17 @@ h2 {
 @media (max-width: 639px) {
   #sidebar-toggle {
     position: fixed;
-    top: 16px;
+    top: 20px;
     left: 16px;
-    z-index: 50;
-    /* Above everything else */
+    z-index: 100;
+    /* Highest possible to stay on top of everything */
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.5rem;
   }
 }
 
@@ -93,7 +100,18 @@ h2 {
 
 @media (max-width: 639px) {
   .header-smooth {
-    padding: 0 16px 0 72px;
+    padding: 0 16px 0 88px !important;
+    height: 84px !important;
+  }
+
+  .sidebar-smooth header {
+    padding-left: 80px !important;
+  }
+
+  #display-room-id,
+  .sidebar-smooth h1 {
+    font-size: 1.1rem !important;
+    -webkit-text-stroke-width: 1px !important;
   }
 }
 
@@ -266,9 +284,13 @@ h2 {
   }
 
   .header-smooth {
-    padding: 0 16px;
     z-index: 40;
     /* Higher than sidebar (30) so toggle stays reachable */
+    padding-top: env(safe-area-inset-top) !important;
+    height: calc(84px + env(safe-area-inset-top)) !important;
+    background-color: white;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.05);
+    /* Subtle shadow for depth */
   }
 }
 
