@@ -78,7 +78,6 @@ const els = {
   messageInput: getEl('message-input'),
   leaveBtn: getEl('leave-btn'),
   copyBtn: getEl('copy-room-btn'),
-  profileName: getEl('profile-name'),
   mainContent: document.querySelector('main'),
   sidebarBackdrop: getEl('sidebar-backdrop'),
   identityModal: getEl('identity-modal'),
@@ -93,6 +92,7 @@ function init() {
   if (myHandle.length < 4) {
     els.identityModal.classList.remove('hidden');
   } else {
+    els.identityModal.classList.add('hidden');
     updatePersonalRoomName();
   }
 
@@ -157,7 +157,6 @@ function setupEventListeners() {
     const val = e.target.value.trim();
     if (val.length >= 4) {
       myHandle = val;
-      updateProfileDisplay();
       updatePersonalRoomName();
       localStorage.setItem('p2p_handle', myHandle);
     }
@@ -169,7 +168,6 @@ function setupEventListeners() {
     if (val.length >= 4) {
       myHandle = val;
       els.usernameInput.value = myHandle;
-      updateProfileDisplay();
       updatePersonalRoomName();
       localStorage.setItem('p2p_handle', myHandle);
       els.identityModal.classList.add('hidden');
@@ -238,7 +236,6 @@ function setupEventListeners() {
     if (e.key === 'p2p_handle') {
       myHandle = e.newValue || '';
       els.usernameInput.value = myHandle;
-      updateProfileDisplay();
       updatePersonalRoomName();
     }
     if (e.key === 'p2p_rooms') {
@@ -288,10 +285,6 @@ function setupEventListeners() {
       }
     }
   });
-}
-
-function updateProfileDisplay() {
-  els.profileName.textContent = myHandle || 'Anonymous Hero';
 }
 
 // 6. ROOM MANAGEMENT
@@ -415,13 +408,15 @@ async function switchRoom(id) {
   els.displayRoomId.textContent = (room?.name || id).toUpperCase();
 
   const idSubtitle = (room && room.name.toLowerCase() !== room.id.toLowerCase()) ? `ID: ${room.id}` : '';
-  const baseStatus = room?.isPrivate ? 'PRIVATE CHANNEL' : 'CONNECTING...';
-  els.peerCount.textContent = idSubtitle ? `${idSubtitle} • ${baseStatus}` : baseStatus;
+  const baseStatus = room?.isPrivate ? '' : 'CONNECTING...';
+  els.peerCount.textContent = idSubtitle ? `${idSubtitle} ${baseStatus ? '• ' + baseStatus : ''}` : baseStatus;
 
   // Toggle visibility of share/exit buttons for personal room
   const isPersonal = id === 'saved-messages';
-  els.copyBtn.classList.toggle('hidden', isPersonal);
-  els.leaveBtn.classList.toggle('hidden', isPersonal);
+
+  // Explicitly set display instead of relying on class alone to ensure it works
+  els.copyBtn.style.display = isPersonal ? 'none' : 'flex';
+  els.leaveBtn.style.display = isPersonal ? 'none' : 'flex';
 
   // Clear messages container and load history
   els.messagesContainer.innerHTML = '';

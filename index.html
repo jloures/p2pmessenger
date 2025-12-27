@@ -12,20 +12,19 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 
-<body class="h-screen flex items-center justify-center">
+<body class="h-screen w-screen overflow-hidden">
 
-  <div id="app"
-    class="w-full h-full max-h-screen bg-white sm:h-[95vh] sm:w-[95vw] sm:max-w-6xl sm:rounded-3xl sm:border-[6px] border-[#1A1A1A] sm:shadow-[12px_12px_0px_#1A1A1A] overflow-hidden flex transition-all duration-300 relative">
+  <div id="app" class="w-full h-full bg-white overflow-hidden flex transition-all duration-300 relative">
 
     <!-- Sidebar -->
     <aside id="sidebar"
       class="w-80 flex-shrink-0 bg-[#FFD93D] border-r-[6px] border-[#1A1A1A] flex flex-col transition-all duration-300 transform -translate-x-full absolute z-30 h-full sm:relative sm:translate-x-0">
-      <header class="p-6 border-b-[6px] border-[#1A1A1A] flex items-center gap-3">
+      <header class="p-4 border-b-[6px] border-[#1A1A1A] flex items-center gap-3">
         <img src="./favicon.png" alt="p2pmessenger" class="w-10 h-10 rounded-full border-4 border-[#1A1A1A]" />
         <div class="flex flex-col">
           <h1 class="text-lg text-white tracking-wider leading-none">P2PMESSENGER</h1>
-          <span id="profile-name" class="text-[10px] font-black text-[#1A1A1A] uppercase truncate mt-0.5">Anonymous
-            Hero</span>
+          <span id="app-version"
+            class="text-[10px] font-black text-[#1A1A1A] uppercase tracking-tighter mt-0.5">v1.3.1</span>
         </div>
       </header>
 
@@ -54,7 +53,7 @@
       </div>
 
       <footer class="p-4 border-t-[6px] border-[#1A1A1A] bg-[#FFD93D]">
-        <span id="app-version" class="version-tag">v1.3.0</span>
+        <span class="text-[10px] font-black text-[#1A1A1A] uppercase">Security First P2P</span>
       </footer>
     </aside>
 
@@ -69,13 +68,13 @@
 
         <div class="flex items-center gap-4">
           <div class="text-right hidden sm:block">
-            <h2 id="display-room-id" class="text-xl text-white">SAVED MESSAGES</h2>
-            <p id="peer-count" class="text-[10px] font-bold text-[#1A1A1A]">CONNECTING...</p>
+            <h2 id="display-room-id" class="text-xl text-white">PERSONAL CHANNEL</h2>
+            <p id="peer-count" class="text-[10px] font-bold text-[#1A1A1A]"></p>
           </div>
           <div class="flex gap-2">
-            <button id="copy-room-btn"
+            <button id="copy-room-btn" style="display: none;"
               class="bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">LINK 🔗</button>
-            <button id="leave-btn" aria-label="Leave current room"
+            <button id="leave-btn" aria-label="Leave current room" style="display: none;"
               class="bg-[#FF6B6B] text-[#1A1A1A] p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">EXIT
               ❌</button>
           </div>
@@ -138,7 +137,7 @@
 
       <!-- Identity Modal (Overlay) -->
       <div id="identity-modal" role="dialog" aria-modal="true" aria-labelledby="identity-title"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md hidden">
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
         <div
           class="bg-white w-full max-w-sm rounded-3xl border-[6px] border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
           <header class="bg-[#4D96FF] p-6 border-b-[6px] border-[#1A1A1A]">

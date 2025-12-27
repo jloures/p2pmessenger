@@ -13,9 +13,7 @@
 }
 
 body {
-  background-color: #f0f0f0;
-  background-image: radial-gradient(var(--toon-black) 1px, transparent 0);
-  background-size: 24px 24px;
+  background-color: white;
   font-family: 'Quicksand', sans-serif;
   height: 100vh;
   height: 100dvh;
