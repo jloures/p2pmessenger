@@ -15,30 +15,30 @@
 <body class="h-screen w-screen overflow-hidden">
 
   <div id="app" class="app-container">
-    <button id="sidebar-toggle" aria-label="Toggle sidebar menu"
-      class="fixed top-4 left-4 z-50 bg-white px-3 py-1.5 rounded-xl border-4 border-[#1A1A1A] font-black text-lg toon-button shadow-[3px_3px_0px_#1A1A1A]">☰</button>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar-smooth">
-      <header class="p-6 flex items-start gap-4 relative">
-        <div class="relative flex-shrink-0">
-          <img src="./favicon.png" alt="p2pmessenger"
-            class="w-12 h-12 rounded-2xl border-4 border-[#1A1A1A] bg-white shadow-[4px_4px_0px_#1A1A1A]" />
-          <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#6BCB77] border-2 border-[#1A1A1A] rounded-full"></div>
-        </div>
-        <div class="flex flex-col flex-1 min-w-0 pr-8">
-          <h1 class="text-xl tracking-widest leading-tight">P2PMSG</h1>
-          <div class="flex flex-col gap-0.5">
-            <span id="app-version"
-              class="text-[9px] font-black text-[#1A1A1A] uppercase bg-white/30 px-1.5 rounded-md w-fit">v1.3.1</span>
-            <span id="display-username"
-              class="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest truncate">HERO</span>
+      <header class="p-6 pb-2">
+        <div class="flex items-center justify-between mb-4">
+          <div class="relative">
+            <img src="./favicon.png" alt="p2pmessenger"
+              class="w-12 h-12 rounded-2xl border-4 border-[#1A1A1A] bg-white shadow-[4px_4px_0px_#1A1A1A]" />
+            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#6BCB77] border-2 border-[#1A1A1A] rounded-full"></div>
           </div>
+          <button id="edit-profile-btn" aria-label="Edit Profile"
+            class="w-10 h-10 bg-white border-4 border-[#1A1A1A] rounded-2xl flex items-center justify-center toon-button shadow-[3px_3px_0px_#1A1A1A] text-lg">
+            👤
+          </button>
         </div>
-        <button id="edit-profile-btn" aria-label="Edit Profile"
-          class="absolute top-6 right-6 w-8 h-8 bg-white border-2 border-[#1A1A1A] rounded-xl flex items-center justify-center toon-button shadow-[2px_2px_0px_#1A1A1A] text-sm">
-          👤
-        </button>
+        <div class="flex flex-col gap-1">
+          <div class="flex items-baseline gap-2">
+            <h1 class="text-2xl tracking-widest leading-none">P2PMSG</h1>
+            <span id="app-version"
+              class="text-[10px] font-black text-[#1A1A1A] opacity-50 uppercase bg-black/5 px-2 py-0.5 rounded-full">v1.3.1</span>
+          </div>
+          <div id="display-username"
+            class="text-[11px] font-black text-[#1A1A1A] uppercase tracking-[0.2em] opacity-80 pt-1">HERO</div>
+        </div>
       </header>
 
       <div class="flex-1 overflow-y-auto p-6 space-y-4 scroll-custom">
@@ -59,6 +59,12 @@
         </div>
       </footer>
     </aside>
+
+    <button id="sidebar-toggle" aria-label="Toggle sidebar menu" class="fixed top-5 left-5 z-[100] sm:hidden">
+      <span class="burger-span"></span>
+      <span class="burger-span"></span>
+      <span class="burger-span"></span>
+    </button>
 
     <!-- Main Chat Area -->
     <main class="main-smooth relative">

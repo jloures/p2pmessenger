@@ -52,8 +52,8 @@ h2 {
   border-right: var(--border-thick) solid var(--toon-black);
   display: flex;
   flex-direction: column;
-  z-index: 30;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 50;
+  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
   flex-shrink: 0;
 }
 
@@ -69,23 +69,57 @@ h2 {
   flex-direction: column;
   min-width: 0;
   background-color: #f8fafc;
-  transition: margin-left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: margin-left 0.3s ease-in-out;
 }
 
 @media (max-width: 639px) {
   #sidebar-toggle {
     position: fixed;
     top: 20px;
-    left: 16px;
+    left: 20px;
     z-index: 100;
-    /* Highest possible to stay on top of everything */
     width: 48px;
     height: 48px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    font-size: 1.5rem;
+    gap: 4px;
+    background-color: white;
+    border: var(--border-thick) solid var(--toon-black);
+    border-radius: 12px;
+    box-shadow: 4px 4px 0px var(--toon-black);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  /* Animated Burger Menu */
+  .burger-span {
+    display: block;
+    width: 24px;
+    height: 3px;
+    background-color: var(--toon-black);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-smooth.open~#sidebar-toggle {
+    left: calc(var(--sidebar-width) - 60px);
+    background-color: var(--toon-red);
+  }
+
+  .sidebar-smooth.open~#sidebar-toggle .burger-span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+    background-color: white;
+  }
+
+  .sidebar-smooth.open~#sidebar-toggle .burger-span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .sidebar-smooth.open~#sidebar-toggle .burger-span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+    background-color: white;
   }
 }
 
@@ -106,13 +140,13 @@ h2 {
   }
 
   .sidebar-smooth header {
-    padding-left: 80px !important;
+    padding-top: 84px !important;
   }
 
   #display-room-id,
   .sidebar-smooth h1 {
     font-size: 1.1rem !important;
-    -webkit-text-stroke-width: 1px !important;
+    -webkit-text-stroke-width: 0.5px !important;
   }
 }
 
