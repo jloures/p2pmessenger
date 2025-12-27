@@ -15,12 +15,12 @@
 <body class="h-screen flex items-center justify-center">
 
   <div id="app"
-    class="w-full h-full max-h-screen bg-white sm:h-[95vh] sm:w-[95vw] sm:max-w-6xl sm:rounded-3xl sm:border-6 border-[#1A1A1A] sm:shadow-[12px_12px_0px_#1A1A1A] overflow-hidden flex transition-all duration-300 relative">
+    class="w-full h-full max-h-screen bg-white sm:h-[95vh] sm:w-[95vw] sm:max-w-6xl sm:rounded-3xl sm:border-[6px] border-[#1A1A1A] sm:shadow-[12px_12px_0px_#1A1A1A] overflow-hidden flex transition-all duration-300 relative">
 
     <!-- Sidebar -->
     <aside id="sidebar"
-      class="w-80 flex-shrink-0 bg-[#FFD93D] border-r-6 border-[#1A1A1A] flex flex-col transition-all duration-300 transform -translate-x-full absolute z-30 h-full sm:relative sm:translate-x-0">
-      <header class="p-6 border-b-6 border-[#1A1A1A] flex items-center gap-3">
+      class="w-80 flex-shrink-0 bg-[#FFD93D] border-r-[6px] border-[#1A1A1A] flex flex-col transition-all duration-300 transform -translate-x-full absolute z-30 h-full sm:relative sm:translate-x-0">
+      <header class="p-6 border-b-[6px] border-[#1A1A1A] flex items-center gap-3">
         <img src="./favicon.png" alt="p2pmessenger" class="w-10 h-10 rounded-full border-4 border-[#1A1A1A]" />
         <div class="flex flex-col">
           <h1 class="text-lg text-white tracking-wider leading-none">P2PMESSENGER</h1>
@@ -44,115 +44,118 @@
 
         <ul id="room-list" class="space-y-2" role="list">
           <!-- Room Items go here -->
-          <button class="room-item active" data-room-id="saved-messages">
-            <span class="room-icon">⭐</span>
-            <span class="room-name">Personal Channel</span>
+          <li>
+            <button class="room-item active" data-room-id="saved-messages">
+              <span class="room-icon">⭐</span>
+              <span class="room-name">Personal Channel</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="p-4 border-t-[6px] border-[#1A1A1A] bg-[#FFD93D]">
+        <span id="app-version" class="version-tag">v1.3.0</span>
+      </footer>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="flex-1 flex flex-col min-w-0 bg-[#6BCB77]/10 relative">
+      <!-- Mobile Header Toggle -->
+      <header
+        class="bg-[#FFD93D] p-4 border-b-[6px] border-[#1A1A1A] flex items-center justify-between sm:justify-end relative z-30">
+        <button id="sidebar-toggle" aria-label="Toggle sidebar menu"
+          class="sm:hidden bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-black text-sm toon-button">MENU
+          ☰</button>
+
+        <div class="flex items-center gap-4">
+          <div class="text-right hidden sm:block">
+            <h2 id="display-room-id" class="text-xl text-white">SAVED MESSAGES</h2>
+            <p id="peer-count" class="text-[10px] font-bold text-[#1A1A1A]">CONNECTING...</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="copy-room-btn"
+              class="bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">LINK 🔗</button>
+            <button id="leave-btn" aria-label="Leave current room"
+              class="bg-[#FF6B6B] text-[#1A1A1A] p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">EXIT
+              ❌</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Message Area -->
+      <div id="messages-container" aria-live="polite"
+        class="flex-1 overflow-y-auto p-4 space-y-6 scroll-custom flex flex-col">
+        <div class="system-message">INITIALIZING PREMIUM COMIC CHANNEL...</div>
+      </div>
+
+      <!-- Input Area -->
+      <footer class="p-4 bg-[#FFD93D] border-t-[6px] border-[#1A1A1A]">
+        <form id="chat-form" class="flex gap-2 max-w-4xl mx-auto">
+          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off"
+            aria-label="Message text"
+            class="flex-1 p-3 rounded-xl border-4 border-[#1A1A1A] font-bold focus:outline-none focus:ring-4 focus:ring-[#4D96FF]">
+          <button type="submit" aria-label="Send message"
+            class="bg-[#FF6B6B] text-[#1A1A1A] px-6 py-2 rounded-xl border-4 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] toon-button font-black text-lg">
+            GO!
           </button>
-      </div>
-  </div>
+        </form>
+      </footer>
 
-  <footer class="p-4 border-t-6 border-[#1A1A1A] bg-[#FFD93D]">
-    <span id="app-version" class="version-tag">v1.3.0</span>
-  </footer>
-  </aside>
-
-  <!-- Main Chat Area -->
-  <main class="flex-1 flex flex-col min-w-0 bg-[#6BCB77]/10 relative">
-    <!-- Mobile Header Toggle -->
-    <header
-      class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex items-center justify-between sm:justify-end relative z-30">
-      <button id="sidebar-toggle" aria-label="Toggle sidebar menu"
-        class="sm:hidden bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-black text-sm toon-button">MENU
-        ☰</button>
-
-      <div class="flex items-center gap-4">
-        <div class="text-right hidden sm:block">
-          <h2 id="display-room-id" class="text-xl text-white">SAVED MESSAGES</h2>
-          <p id="peer-count" class="text-[10px] font-bold text-[#1A1A1A]">SAVED MESSAGES</p>
-        </div>
-        <div class="flex gap-2">
-          <button id="copy-room-btn"
-            class="bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">LINK 🔗</button>
-          <button id="leave-btn" aria-label="Leave current room"
-            class="bg-[#FF6B6B] text-[#1A1A1A] p-2 rounded-xl border-2 border-[#1A1A1A] font-bold text-xs toon-button">EXIT
-            ❌</button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Message Area -->
-    <div id="messages-container" aria-live="polite"
-      class="flex-1 overflow-y-auto p-4 space-y-6 scroll-custom flex flex-col">
-      <div class="system-message">INITIALIZING PREMIUM COMIC CHANNEL...</div>
-    </div>
-
-    <!-- Input Area -->
-    <footer class="p-4 bg-[#FFD93D] border-t-6 border-[#1A1A1A]">
-      <form id="chat-form" class="flex gap-2 max-w-4xl mx-auto">
-        <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off"
-          aria-label="Message text"
-          class="flex-1 p-3 rounded-xl border-4 border-[#1A1A1A] font-bold focus:outline-none focus:ring-4 focus:ring-[#4D96FF]">
-        <button type="submit" aria-label="Send message"
-          class="bg-[#FF6B6B] text-[#1A1A1A] px-6 py-2 rounded-xl border-4 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] toon-button font-black text-lg">
-          GO!
-        </button>
-      </form>
-    </footer>
-
-    <!-- Join Room Modal (Overlay) -->
-    <div id="join-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
-      class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl border-6 border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
-        <header class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex justify-between items-center">
-          <h2 id="modal-title" class="text-xl text-white">JOIN ROOM</h2>
-          <button id="close-modal" aria-label="Close modal" class="text-[#1A1A1A] font-black text-2xl">×</button>
-        </header>
-        <form id="join-form" class="p-6 space-y-4">
-          <div class="space-y-2">
-            <label class="block font-bold text-xs ml-1">ROOM ID</label>
-            <div class="flex gap-2">
-              <input type="text" id="room-id" placeholder="Room ID..." required
-                class="flex-1 p-2 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
-              <button type="button" id="gen-room-btn" aria-label="Generate random room ID"
-                class="bg-[#FFD93D] p-2 rounded-xl border-4 border-[#1A1A1A] toon-button">🎲</button>
+      <!-- Join Room Modal (Overlay) -->
+      <div id="join-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div
+          class="bg-white w-full max-w-sm rounded-3xl border-[6px] border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
+          <header class="bg-[#FFD93D] p-4 border-b-[6px] border-[#1A1A1A] flex justify-between items-center">
+            <h2 id="modal-title" class="text-xl text-white">JOIN ROOM</h2>
+            <button id="close-modal" aria-label="Close modal" class="text-[#1A1A1A] font-black text-2xl">×</button>
+          </header>
+          <form id="join-form" class="p-6 space-y-4">
+            <div class="space-y-2">
+              <label class="block font-bold text-xs ml-1">ROOM ID</label>
+              <div class="flex gap-2">
+                <input type="text" id="room-id" placeholder="Room ID..." required
+                  class="flex-1 p-2 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
+                <button type="button" id="gen-room-btn" aria-label="Generate random room ID"
+                  class="bg-[#FFD93D] p-2 rounded-xl border-4 border-[#1A1A1A] toon-button">🎲</button>
+              </div>
             </div>
-          </div>
-          <div class="space-y-2">
-            <label class="block font-bold text-xs ml-1">SECRET KEY (OPTIONAL)</label>
-            <input type="password" id="room-password" placeholder="Passkey..."
-              class="w-full p-2 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
-          </div>
-          <button type="submit"
-            class="w-full bg-[#6BCB77] text-[#1A1A1A] p-3 rounded-xl border-4 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] toon-button font-black">START
-            CHATTING</button>
-        </form>
+            <div class="space-y-2">
+              <label class="block font-bold text-xs ml-1">SECRET KEY (OPTIONAL)</label>
+              <input type="password" id="room-password" placeholder="Passkey..."
+                class="w-full p-2 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF]" />
+            </div>
+            <button type="submit"
+              class="w-full bg-[#6BCB77] text-[#1A1A1A] p-3 rounded-xl border-4 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] toon-button font-black">START
+              CHATTING</button>
+          </form>
+        </div>
       </div>
-    </div>
-    <!-- Sidebar Backdrop (Mobile) -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-20 hidden sm:hidden transition-opacity duration-300">
-    </div>
+      <!-- Sidebar Backdrop (Mobile) -->
+      <div id="sidebar-backdrop"
+        class="fixed inset-0 bg-black/20 z-20 hidden sm:hidden transition-opacity duration-300">
+      </div>
 
-    <!-- Identity Modal (Overlay) -->
-    <div id="identity-modal" role="dialog" aria-modal="true" aria-labelledby="identity-title"
-      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md hidden">
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl border-6 border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
-        <header class="bg-[#4D96FF] p-6 border-b-6 border-[#1A1A1A]">
-          <h2 id="identity-title" class="text-2xl text-white">CHOOSE YOUR HERO NAME</h2>
-        </header>
-        <form id="identity-form" class="p-8 space-y-6">
-          <p class="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">Identity must be 4+ characters.</p>
-          <input type="text" id="identity-input" placeholder="Enter Name..." required minlength="4"
-            class="w-full p-4 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF] text-lg" />
-          <button type="submit"
-            class="w-full bg-[#FF6B6B] text-[#1A1A1A] p-4 rounded-xl border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] toon-button font-black text-lg uppercase">
-            START MY JOURNEY
-          </button>
-        </form>
+      <!-- Identity Modal (Overlay) -->
+      <div id="identity-modal" role="dialog" aria-modal="true" aria-labelledby="identity-title"
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md hidden">
+        <div
+          class="bg-white w-full max-w-sm rounded-3xl border-[6px] border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
+          <header class="bg-[#4D96FF] p-6 border-b-[6px] border-[#1A1A1A]">
+            <h2 id="identity-title" class="text-2xl text-white">CHOOSE YOUR HERO NAME</h2>
+          </header>
+          <form id="identity-form" class="p-8 space-y-6">
+            <p class="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">Identity must be 4+ characters.</p>
+            <input type="text" id="identity-input" placeholder="Enter Name..." required minlength="4"
+              class="w-full p-4 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF] text-lg" />
+            <button type="submit"
+              class="w-full bg-[#FF6B6B] text-[#1A1A1A] p-4 rounded-xl border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] toon-button font-black text-lg uppercase">
+              START MY JOURNEY
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-  </main>
+    </main>
 
   </div>
 

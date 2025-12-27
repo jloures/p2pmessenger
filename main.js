@@ -40,10 +40,10 @@ let rooms = [];
 try {
   rooms = JSON.parse(localStorage.getItem('p2p_rooms'));
   if (!rooms || rooms.length === 0) {
-    rooms = [{ id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
+    rooms = [{ id: 'saved-messages', name: 'Personal Channel', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
   }
 } catch (e) {
-  rooms = [{ id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
+  rooms = [{ id: 'saved-messages', name: 'Personal Channel', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
 }
 let activeRoomId = 'saved-messages';
 let roomMessages = {};
