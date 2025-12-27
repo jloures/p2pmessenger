@@ -56,8 +56,6 @@ try {
 // Expose for testing/debugging
 window.utils = utils;
 
-let roomToRenameId = null;
-
 // 3. DOM ELEMENTS
 const getEl = (id) => document.getElementById(id);
 
@@ -86,10 +84,6 @@ const els = {
   identityModal: getEl('identity-modal'),
   identityForm: getEl('identity-form'),
   identityInput: getEl('identity-input'),
-  renameModal: getEl('rename-modal'),
-  renameForm: getEl('rename-form'),
-  renameInput: getEl('rename-input'),
-  closeRenameModal: getEl('close-rename-modal'),
 };
 
 let myHandle = localStorage.getItem('p2p_handle') || '';
@@ -236,21 +230,6 @@ function setupEventListeners() {
     setTimeout(() => els.copyBtn.textContent = 'LINK 🔗', 2000);
   });
 
-  els.closeRenameModal.addEventListener('click', () => {
-    els.renameModal.classList.add('hidden');
-    roomToRenameId = null;
-  });
-
-  els.renameForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newName = els.renameInput.value.trim();
-    if (newName && roomToRenameId) {
-      renameRoom(roomToRenameId, newName);
-      els.renameModal.classList.add('hidden');
-      roomToRenameId = null;
-    }
-  });
-
   window.addEventListener('hashchange', refreshFromHash);
 
   // Sync across tabs
@@ -274,7 +253,7 @@ function setupEventListeners() {
       if (!stillExists && activeRoomId !== 'saved-messages') {
         switchRoom('saved-messages');
       } else if (activeRoomId === oldActiveRoomId) {
-        // Refresh header in case of rename
+        // Refresh header if needed
         const room = rooms.find(r => r.id === activeRoomId);
         if (room) {
           els.displayRoomId.textContent = (room.name || room.id).toUpperCase();
@@ -328,16 +307,9 @@ function renderRoomList() {
         <div class="room-name truncate text-sm font-black">${room.name}</div>
         <div class="text-[9px] truncate text-[#1A1A1A] opacity-50 uppercase font-black tracking-tighter">${room.id}</div>
       </div>
-      ${!room.isPrivate ? `<button class="rename-btn text-[10px] w-6 h-6 rounded-lg opacity-0 bg-[#FFD93D] border-2 border-[#1A1A1A] group-hover:opacity-100 transition-opacity" data-id="${room.id}" aria-label="Rename room ${room.name}">✏️</button>` : ''}
     `;
 
     btn.addEventListener('click', (e) => {
-      if (e.target.classList.contains('rename-btn')) {
-        roomToRenameId = room.id;
-        els.renameInput.value = room.name;
-        els.renameModal.classList.remove('hidden');
-        return;
-      }
       switchRoom(room.id);
       if (window.innerWidth < 640) {
         els.sidebar.classList.remove('open');
@@ -362,19 +334,6 @@ function removeRoom(id) {
   saveRooms();
   renderRoomList();
   switchRoom('saved-messages');
-}
-
-function renameRoom(id, newName) {
-  if (id === 'saved-messages') return; // Cannot rename personal room here
-  const room = rooms.find(r => r.id === id);
-  if (room) {
-    room.name = newName;
-    saveRooms();
-    renderRoomList();
-    if (activeRoomId === id) {
-      switchRoom(id);
-    }
-  }
 }
 
 function updatePersonalRoomName() {

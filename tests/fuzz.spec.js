@@ -108,27 +108,6 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
         await expect(page.locator('#app')).toBeVisible();
     });
 
-    test('Fuzz: Malformed Rename Inputs', async ({ page }) => {
-        const roomID = 'rename-fuzz';
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', roomID);
-        await page.click('#join-form button[type="submit"]');
-
-        const weirdNames = ['   ', '\n\n', 'A'.repeat(500), '<b>Bold</b>', '"); alert(1); ("'];
-        for (const name of weirdNames) {
-            await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-            await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-            await page.fill('#rename-input', name);
-            await page.click('#rename-form button[type="submit"]');
-
-            // If modal still visible (e.g. empty trim), close it to continue fuzzing
-            const modal = page.locator('#rename-modal');
-            if (await modal.isVisible()) {
-                await page.click('#close-rename-modal');
-            }
-        }
-        await expect(page.locator('#app')).toBeVisible();
-    });
 
     test('Fuzz: Maximum Room Count Stress', async ({ page }) => {
         // Create 25 rooms to check sidebar layout stability

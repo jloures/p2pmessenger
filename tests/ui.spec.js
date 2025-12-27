@@ -76,43 +76,6 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(page.locator('#room-list')).toContainText(roomID);
     });
 
-    // 7. Renaming Active Room
-    test('UI 7: Should allow renaming a room and updating the header', async ({ page }) => {
-        const roomID = 'rename-test';
-        const nickname = 'Bento Box';
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', roomID);
-        await page.click('#join-form button[type="submit"]');
-
-        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-        await page.fill('#rename-input', nickname);
-        await page.click('#rename-form button[type="submit"]');
-        await expect(page.locator('#display-room-id')).toHaveText(nickname.toUpperCase());
-    });
-
-    // 8. Subtitle Logic
-    test('UI 8: Should show room technical ID in subtitle when renamed', async ({ page }) => {
-        const roomID = 'subtitle-test';
-        const nickname = 'Secret HQ';
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', roomID);
-        await page.click('#join-form button[type="submit"]');
-
-        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-        await page.fill('#rename-input', nickname);
-        await page.click('#rename-form button[type="submit"]');
-        await expect(page.locator('#peer-count')).toContainText(`ID: ${roomID}`);
-    });
-
-    // 9. Room Protected from Rename
-    test('UI 9: Should not show rename button for Saved-Messages', async ({ page }) => {
-        const savedItem = page.locator('.room-item[data-room-id="saved-messages"]');
-        await savedItem.hover();
-        const renameBtn = savedItem.locator('.rename-btn');
-        await expect(renameBtn).toHaveCount(0);
-    });
 
     // 10. Duplicate Room Prevention
     test('UI 10: Should not add duplicate rooms to the sidebar', async ({ page }) => {
@@ -243,27 +206,6 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(page.locator('#join-modal')).toBeVisible();
     });
 
-    // 22. Multiple Rename Operations
-    test('UI 22: Should allow multiple renames on the same room', async ({ page }) => {
-        const roomID = 'multi-rename';
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', roomID);
-        await page.click('#join-form button[type="submit"]');
-
-        // First rename
-        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-        await page.fill('#rename-input', 'Alpha');
-        await page.click('#rename-form button[type="submit"]');
-        await expect(page.locator('#display-room-id')).toHaveText('ALPHA');
-
-        // Second rename
-        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-        await page.fill('#rename-input', 'Beta');
-        await page.click('#rename-form button[type="submit"]');
-        await expect(page.locator('#display-room-id')).toHaveText('BETA');
-    });
 
     // 23. Message Timestamp Formatting
     test('UI 23: Should display message timestamp in HH:MM format', async ({ page }) => {
@@ -336,20 +278,6 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(modal).toBeVisible();
     });
 
-    // 32. Rename Prompt Cancellation
-    test('UI 32: Should not rename room if prompt is cancelled', async ({ page }) => {
-        const roomID = 'cancel-rename';
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', roomID);
-        await page.click('#join-form button[type="submit"]');
-
-        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-
-        await page.click('#close-rename-modal');
-
-        await expect(page.locator('#display-room-id')).toHaveText(roomID.toUpperCase());
-    });
 
     // 33. Sidebar Profile Default
     test('UI 33: Profile name should not update if input is too short (min 4)', async ({ page }) => {
@@ -410,11 +338,16 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(bubble).toHaveCSS('overflow-wrap', 'break-word');
     });
 
-    // 39. Rename Saved-Messages via JS prevention
-    test('UI 39: UI should not provide rename UI for private channels', async ({ page }) => {
-        const saved = page.locator('.room-item[data-room-id="saved-messages"]');
-        await saved.hover();
-        await expect(saved.locator('.rename-btn')).not.toBeVisible();
+    // 39. Rename button absence
+    test('UI 39: UI should not provide rename UI for any channels', async ({ page }) => {
+        const roomID = 'immutable-room';
+        await page.click('#show-join-modal');
+        await page.fill('#room-id', roomID);
+        await page.click('#join-form button[type="submit"]');
+
+        const item = page.locator(`.room-item[data-room-id="${roomID}"]`);
+        await item.hover();
+        await expect(item.locator('.rename-btn')).not.toBeVisible();
     });
 
     // 40. Message sequence check

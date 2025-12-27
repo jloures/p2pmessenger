@@ -59,16 +59,6 @@ test.describe('Visual Regression Tests', () => {
         await expect(page.locator('#join-modal .toon-modal')).toHaveScreenshot('join-modal.png');
     });
 
-    test('Visual: Rename Room Modal Content', async ({ page }) => {
-        await page.setViewportSize({ width: 1280, height: 800 });
-        const roomID = 'visual-rename';
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', roomID);
-        await page.click('#join-form button[type="submit"]');
-        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
-        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
-        await expect(page.locator('#rename-modal .toon-modal')).toHaveScreenshot('rename-modal.png');
-    });
 
     test('Visual: Chat Bubble Right (Own)', async ({ page }) => {
         await page.click('#edit-profile-btn');
@@ -135,29 +125,6 @@ test.describe('Visual Regression Tests', () => {
         });
     });
 
-    test('Visual: Rename Button Hover State', async ({ page }) => {
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', 'hover-test');
-        await page.click('#join-form button[type="submit"]');
-
-        const item = page.locator('.room-item[data-room-id="hover-test"]');
-        await item.hover();
-        await expect(item.locator('.rename-btn')).toHaveScreenshot('rename-btn-hover.png');
-    });
-
-    test('Visual: Main Header with Subtitle', async ({ page }) => {
-        page.on('dialog', d => d.accept('NICKNAME'));
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', 'long-technical-id');
-        await page.click('#join-form button[type="submit"]');
-
-        await page.locator('.room-item[data-room-id="long-technical-id"]').hover();
-        await page.locator('.rename-btn').click({ force: true });
-
-        await expect(page.locator('header.sm\\:justify-end')).toHaveScreenshot('header-with-subtitle.png', {
-            mask: [page.locator('#peer-count')]
-        });
-    });
 
     test('Visual: Exit Button Styling', async ({ page }) => {
         // Join a room so exit button is visible
