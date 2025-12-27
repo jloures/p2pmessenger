@@ -94,7 +94,7 @@ h2 {
   align-items: center;
   padding: 0 24px 0 84px;
   /* Space for fixed toggle */
-  background-color: white;
+  background-color: var(--toon-yellow);
   border-bottom: var(--border-thick) solid var(--toon-black);
 }
 
@@ -117,7 +117,7 @@ h2 {
 
 .footer-smooth {
   padding: 20px 24px;
-  background-color: white;
+  background-color: var(--toon-yellow);
   border-top: var(--border-thick) solid var(--toon-black);
 }
 
@@ -288,7 +288,7 @@ h2 {
     /* Higher than sidebar (30) so toggle stays reachable */
     padding-top: env(safe-area-inset-top) !important;
     height: calc(84px + env(safe-area-inset-top)) !important;
-    background-color: white;
+    background-color: var(--toon-yellow);
     box-shadow: 0 4px 0 rgba(0, 0, 0, 0.05);
     /* Subtle shadow for depth */
   }
