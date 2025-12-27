@@ -186,11 +186,14 @@ h2 {
   .header-smooth {
     padding: 0 16px 0 88px !important;
     height: 84px !important;
+    z-index: 40 !important;
+    background-color: var(--toon-yellow) !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
 
   .sidebar-smooth header {
     padding-top: 24px !important;
-    /* Re-aligned with p-6 */
   }
 
   #display-room-id,
@@ -379,13 +382,15 @@ h2 {
   }
 
   .header-smooth {
-    z-index: 40;
-    /* Higher than sidebar (30) so toggle stays reachable */
-    padding-top: env(safe-area-inset-top) !important;
-    height: calc(84px + env(safe-area-inset-top)) !important;
-    background-color: var(--toon-yellow);
-    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.05);
-    /* Subtle shadow for depth */
+    z-index: 40 !important;
+    /* Respect safe area but with robust fallback */
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    height: calc(84px + env(safe-area-inset-top, 0px)) !important;
+    background-color: var(--toon-yellow) !important;
+    display: flex !important;
+    visibility: visible !important;
+    position: relative !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
   }
 }
 
