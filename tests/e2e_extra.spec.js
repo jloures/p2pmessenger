@@ -22,7 +22,7 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
         expect(values.size).toBe(5);
     });
 
-    test('E2E: Copy button provides visual feedback', async ({ page, context }) => {
+    test('E2E: Copy invite button provides visual feedback in Share Modal', async ({ page, context }) => {
         await context.grantPermissions(['clipboard-write']);
         await page.click('#edit-profile-btn');
         await page.fill('#identity-input', 'FeedbackHero');
@@ -31,15 +31,19 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
         await page.fill('#room-id', 'feedback-room');
         await page.click('#join-form button[type="submit"]');
 
-        const copyBtn = page.locator('#copy-room-btn');
-        const originalText = await copyBtn.textContent();
+        await page.click('#share-room-btn');
+        const copyBtn = page.locator('#copy-invite-btn');
+        // Get text before click (COPY INVITE LINK 📋)
+        // Note: checking specifically for the text we expect
+        await expect(copyBtn).toContainText('COPY INVITE LINK');
+
         await copyBtn.click();
 
-        // Should show feedback text (I changed it to 'COPIED! ✅' in main.js)
+        // Should show feedback text
         await expect(copyBtn).toHaveText('COPIED! ✅');
 
         // Should revert after timeout
-        await expect(copyBtn).toHaveText(originalText, { timeout: 10000 });
+        await expect(copyBtn).toContainText('COPY INVITE LINK', { timeout: 10000 });
     });
 
     test('E2E: Messages handle multiline and long text', async ({ page }) => {

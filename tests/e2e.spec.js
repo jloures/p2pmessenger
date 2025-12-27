@@ -27,8 +27,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await expect(alicePage.locator('#display-room-id')).toHaveText(roomName.toUpperCase());
         await expect(alicePage.locator('#peer-count')).toContainText('1 HERO ONLINE', { timeout: 30000 });
 
-        // 2. Alice copies the link
-        await alicePage.click('#copy-room-btn');
+        // 2. Alice copies the link via Share Modal
+        await alicePage.click('#share-room-btn');
+        await alicePage.click('#copy-invite-btn');
         const shareLink = await alicePage.evaluate(() => navigator.clipboard.readText());
         expect(shareLink).toContain(`#room=${roomName}`);
 

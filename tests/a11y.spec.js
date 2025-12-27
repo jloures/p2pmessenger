@@ -115,7 +115,7 @@ test.describe('Accessibility (a11y) Audits', () => {
 
     // 14. Button Role Verification
     test('A11y 14: Interactive elements should use button or a tags', async ({ page }) => {
-        const clickable = page.locator('#show-join-modal, #leave-btn, #copy-room-btn');
+        const clickable = page.locator('#show-join-modal, #leave-btn, #share-room-btn');
         const tagNames = await clickable.evaluateAll(els => els.map(el => el.tagName.toLowerCase()));
         tagNames.forEach(tag => expect(['button', 'a']).toContain(tag));
     });
@@ -163,6 +163,22 @@ test.describe('Accessibility (a11y) Audits', () => {
     test('A11y 20: Should use semantic main landmark', async ({ page }) => {
         const main = page.locator('main');
         await expect(main).toBeVisible();
+    });
+
+    // 21. Share Modal Automated Audit
+    test('A11y 21: Share modal should have no a11y violations', async ({ page }) => {
+        // Must join a room first to see share button
+        await page.click('#show-join-modal');
+        await page.fill('#room-id', 'a11y-share-room');
+        await page.click('#join-form button[type="submit"]');
+
+        await page.click('#share-room-btn');
+        await page.waitForSelector('#share-modal:not(.hidden)');
+
+        const accessibilityScanResults = await new AxeBuilder({ page })
+            .include('#share-modal')
+            .analyze();
+        expect(accessibilityScanResults.violations).toEqual([]);
     });
 
 });

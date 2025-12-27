@@ -1,5 +1,6 @@
 import { Buffer } from 'https://esm.sh/buffer@6.0.3';
 window.Buffer = Buffer;
+import QRCode from 'https://esm.sh/qrcode@1.5.1';
 
 import { P2PMessenger } from './p2p.js';
 import * as utils from './utils.js';
@@ -78,12 +79,17 @@ const els = {
   chatForm: getEl('chat-form'),
   messageInput: getEl('message-input'),
   leaveBtn: getEl('leave-btn'),
-  copyBtn: getEl('copy-room-btn'),
+  leaveBtn: getEl('leave-btn'),
   mainContent: document.querySelector('main'),
   sidebarBackdrop: getEl('sidebar-backdrop'),
   identityModal: getEl('identity-modal'),
   identityForm: getEl('identity-form'),
   identityInput: getEl('identity-input'),
+  shareBtn: getEl('share-room-btn'),
+  shareModal: getEl('share-modal'),
+  closeShareModal: getEl('close-share-modal'),
+  qrContainer: getEl('qrcode-container'),
+  copyInviteBtn: getEl('copy-invite-btn'),
 };
 
 let myHandle = localStorage.getItem('p2p_handle') || '';
@@ -218,16 +224,46 @@ function setupEventListeners() {
     removeRoom(activeRoomId);
   });
 
-  els.copyBtn.addEventListener('click', () => {
+  els.shareBtn.addEventListener('click', async () => {
     const room = rooms.find(r => r.id === activeRoomId);
     if (!room || room.isPrivate) return;
 
     const shareUrl = `${window.location.origin}${window.location.pathname}#room=${room.id}&pass=${room.password || ''}`;
+
+    // Clear previous QR
+    els.qrContainer.innerHTML = '';
+
+    // Generate QR
+    try {
+      const canvas = await QRCode.toCanvas(shareUrl, {
+        width: 200,
+        margin: 0,
+        color: {
+          dark: '#1A1A1A',
+          light: '#FFFFFF'
+        }
+      });
+      els.qrContainer.appendChild(canvas);
+      els.shareModal.classList.remove('hidden');
+    } catch (err) {
+      console.error(err);
+    }
+  });
+
+  els.closeShareModal.addEventListener('click', () => {
+    els.shareModal.classList.add('hidden');
+  });
+
+  els.copyInviteBtn.addEventListener('click', () => {
+    const room = rooms.find(r => r.id === activeRoomId);
+    if (!room) return;
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}#room=${room.id}&pass=${room.password || ''}`;
     navigator.clipboard.writeText(shareUrl);
 
-    const originalText = els.copyBtn.textContent;
-    els.copyBtn.textContent = 'COPIED! ✅';
-    setTimeout(() => els.copyBtn.textContent = 'LINK 🔗', 2000);
+    const originalText = els.copyInviteBtn.innerHTML;
+    els.copyInviteBtn.innerHTML = 'COPIED! ✅';
+    setTimeout(() => els.copyInviteBtn.innerHTML = originalText, 2000);
   });
 
   window.addEventListener('hashchange', refreshFromHash);
@@ -400,7 +436,7 @@ async function switchRoom(id) {
   const isPersonal = id === 'saved-messages';
 
   // Explicitly set display instead of relying on class alone to ensure it works
-  els.copyBtn.style.display = isPersonal ? 'none' : 'flex';
+  els.shareBtn.style.display = isPersonal ? 'none' : 'flex';
   els.leaveBtn.style.display = isPersonal ? 'none' : 'flex';
 
   // Clear messages container and load history

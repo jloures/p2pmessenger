@@ -115,17 +115,20 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(page.locator('#display-room-id')).toContainText('TESTHERO');
     });
 
-    // 13. Clipboard Feedback
-    test('UI 13: Should provide visual feedback when copying room link', async ({ page, context }) => {
+    // 13. Clipboard Feedback via Share Modal
+    test('UI 13: Should provide visual feedback when copying invite link via Share Modal', async ({ page, context }) => {
         await context.grantPermissions(['clipboard-write']);
         await page.click('#show-join-modal');
         await page.fill('#room-id', 'copy-link');
         await page.click('#join-form button[type="submit"]');
 
-        const copyBtn = page.locator('#copy-room-btn');
+        await page.click('#share-room-btn');
+        await expect(page.locator('#share-modal')).toBeVisible();
+
+        const copyBtn = page.locator('#copy-invite-btn');
         await copyBtn.click();
         await expect(copyBtn).toHaveText('COPIED! ✅');
-        await expect(copyBtn).toHaveText('LINK 🔗', { timeout: 5000 });
+        await expect(copyBtn).toHaveText('COPY INVITE LINK 📋', { timeout: 5000 });
     });
 
     // 14. Message Input: No empty
@@ -311,16 +314,17 @@ test.describe('P2P Messenger UI Tests', () => {
     });
 
     // 36. Link Revert Timeout
-    test('UI 36: Copy button should revert to "LINK 🔗" after feedback', async ({ page, context }) => {
+    test('UI 36: Copy invite button should revert to "COPY INVITE LINK 📋" after feedback', async ({ page, context }) => {
         await context.grantPermissions(['clipboard-write']);
         await page.click('#show-join-modal');
         await page.fill('#room-id', 'revert-test');
         await page.click('#join-form button[type="submit"]');
 
-        const btn = page.locator('#copy-room-btn');
+        await page.click('#share-room-btn');
+        const btn = page.locator('#copy-invite-btn');
         await btn.click();
         await expect(btn).toHaveText('COPIED! ✅');
-        await expect(btn).toHaveText('LINK 🔗', { timeout: 3000 });
+        await expect(btn).toHaveText('COPY INVITE LINK 📋', { timeout: 3000 });
     });
 
     // 37. URL Hash Room change while app is open

@@ -92,14 +92,20 @@ test.describe('Visual Regression Tests', () => {
         });
     });
 
-    test('Visual: Copy Button Feedback state', async ({ page }) => {
-        // Need a room other than saved-messages to show link
+    test('Visual: Share Modal and Invite Feedback', async ({ page }) => {
+        // Need a room other than saved-messages to show share button
         await page.click('#show-join-modal');
         await page.fill('#room-id', 'visual-room');
         await page.click('#join-form button[type="submit"]');
 
-        await page.click('#copy-room-btn');
-        await expect(page.locator('#copy-room-btn')).toHaveScreenshot('copy-button-feedback.png');
+        await page.click('#share-room-btn');
+        // Snapshot the whole modal
+        await expect(page.locator('#share-modal .toon-modal')).toHaveScreenshot('share-modal.png', {
+            mask: [page.locator('#qrcode-container canvas')] // Mask QR code as it changes
+        });
+
+        await page.click('#copy-invite-btn');
+        await expect(page.locator('#copy-invite-btn')).toHaveScreenshot('copy-invite-feedback.png');
     });
 
     test('Visual: Profile Identity in Sidebar', async ({ page }) => {
