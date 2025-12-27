@@ -1,4 +1,4 @@
-import { joinRoom } from 'https://esm.sh/trystero@0.22.0/torrent';
+import { joinRoom } from 'https://esm.sh/trystero@0.22.0/nostr';
 
 export class P2PMessenger {
     constructor(appId) {
@@ -14,7 +14,25 @@ export class P2PMessenger {
 
     join(roomName, handle, password = null) {
         this.myHandle = handle;
-        const config = { appId: this.appId };
+        const config = {
+            appId: this.appId,
+            relays: [
+                'wss://relay.damus.io',
+                'wss://relay.snort.social',
+                'wss://eden.nostr.land',
+                'wss://relay.ostr.com',
+                'wss://relay.one'
+            ],
+            rtcConfig: {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' }
+                ]
+            }
+        };
         if (password) config.password = password;
 
         this.room = joinRoom(config, roomName);
@@ -23,16 +41,17 @@ export class P2PMessenger {
         this.sendAction = sendMsg;
 
         getMsg((data, peerId) => {
+            console.log('Received data from', peerId, data);
             if (data.type === 'handshake') {
                 this.peers.set(peerId, data.sender);
-                this.notifySystem(`${data.sender} joined.`);
+                this.notifySystem(`${data.sender} JOINED THE HERO COMPASS.`);
                 this.sendAction({ type: 'handshake-reply', sender: this.myHandle });
                 this.notifyPeers();
                 return;
             }
             if (data.type === 'handshake-reply') {
                 this.peers.set(peerId, data.sender);
-                this.notifySystem(`Connected to ${data.sender}.`);
+                this.notifySystem(`CONNECTED TO ${data.sender}!`);
                 this.notifyPeers();
                 return;
             }
@@ -40,17 +59,19 @@ export class P2PMessenger {
         });
 
         this.room.onPeerJoin(peerId => {
-            this.notifySystem(`Peer found, shaking hands...`);
+            console.log('Peer found in room:', peerId);
+            this.notifySystem(`PEER FOUND, CONNECTING...`);
             if (this.sendAction) {
                 this.sendAction({ type: 'handshake', sender: this.myHandle });
             }
         });
 
         this.room.onPeerLeave(peerId => {
-            const handle = this.peers.get(peerId) || 'A peer';
+            console.log('Peer left room:', peerId);
+            const handle = this.peers.get(peerId) || 'A PEER';
             this.peers.delete(peerId);
             this.notifyPeers();
-            this.notifySystem(`${handle} left.`);
+            this.notifySystem(`${handle} LEFT THE JOURNEY.`);
         });
     }
 
