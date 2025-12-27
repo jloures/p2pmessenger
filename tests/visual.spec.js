@@ -56,7 +56,18 @@ test.describe('Visual Regression Tests', () => {
     test('Visual: Join Room Modal Content', async ({ page }) => {
         await page.setViewportSize({ width: 1280, height: 800 });
         await page.click('#show-join-modal');
-        await expect(page.locator('#join-modal .bg-white').first()).toHaveScreenshot('join-modal.png');
+        await expect(page.locator('#join-modal .toon-modal')).toHaveScreenshot('join-modal.png');
+    });
+
+    test('Visual: Rename Room Modal Content', async ({ page }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        const roomID = 'visual-rename';
+        await page.click('#show-join-modal');
+        await page.fill('#room-id', roomID);
+        await page.click('#join-form button[type="submit"]');
+        await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
+        await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
+        await expect(page.locator('#rename-modal .toon-modal')).toHaveScreenshot('rename-modal.png');
     });
 
     test('Visual: Chat Bubble Right (Own)', async ({ page }) => {

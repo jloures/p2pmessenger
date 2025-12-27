@@ -52,7 +52,14 @@ h2 {
   display: flex;
   flex-direction: column;
   z-index: 30;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex-shrink: 0;
+}
+
+.sidebar-smooth.collapsed {
+  width: 0;
+  transform: translateX(-100%);
+  border-right-width: 0;
 }
 
 .main-smooth {
@@ -61,7 +68,7 @@ h2 {
   flex-direction: column;
   min-width: 0;
   background-color: #f8fafc;
-  /* Subtle off-white for main area like Slack */
+  transition: margin-left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @media (max-width: 639px) {
@@ -78,9 +85,16 @@ h2 {
   height: 72px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 24px 0 84px;
+  /* Space for fixed toggle */
   background-color: white;
   border-bottom: var(--border-thick) solid var(--toon-black);
+}
+
+@media (max-width: 639px) {
+  .header-smooth {
+    padding: 0 16px 0 72px;
+  }
 }
 
 .footer-smooth {
@@ -258,10 +272,28 @@ h2 {
   }
 }
 
-/* Shared Utilities */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
+/* Standard Toon Modal */
+.toon-modal {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  border: var(--border-outer) solid var(--toon-black);
+  box-shadow: 12px 12px 0px var(--toon-black);
+  border-radius: 32px;
+  overflow: hidden;
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toon-modal-header {
+  padding: 24px;
+  border-bottom: var(--border-outer) solid var(--toon-black);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toon-modal-body {
+  padding: 32px;
 }
 
 .input-smooth {
@@ -270,13 +302,15 @@ h2 {
   padding: 12px 16px;
   font-weight: 700;
   outline: none;
-  transition: box-shadow 0.2s ease;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .input-smooth:focus {
   box-shadow: 4px 4px 0px var(--toon-black);
+  transform: translate(-2px, -2px);
   outline: 2px solid var(--toon-sky);
-  /* Standard focus indicator for a11y */
   outline-offset: 2px;
 }
 

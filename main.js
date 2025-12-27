@@ -56,6 +56,8 @@ try {
 // Expose for testing/debugging
 window.utils = utils;
 
+let roomToRenameId = null;
+
 // 3. DOM ELEMENTS
 const getEl = (id) => document.getElementById(id);
 
@@ -84,6 +86,10 @@ const els = {
   identityModal: getEl('identity-modal'),
   identityForm: getEl('identity-form'),
   identityInput: getEl('identity-input'),
+  renameModal: getEl('rename-modal'),
+  renameForm: getEl('rename-form'),
+  renameInput: getEl('rename-input'),
+  closeRenameModal: getEl('close-rename-modal'),
 };
 
 let myHandle = localStorage.getItem('p2p_handle') || '';
@@ -133,9 +139,11 @@ function refreshFromHash() {
 function setupEventListeners() {
   els.sidebarToggle.addEventListener('click', (e) => {
     e.stopPropagation();
-    const isOpen = els.sidebar.classList.toggle('open');
     if (window.innerWidth < 640) {
+      const isOpen = els.sidebar.classList.toggle('open');
       els.sidebarBackdrop.classList.toggle('hidden', !isOpen);
+    } else {
+      els.sidebar.classList.toggle('collapsed');
     }
   });
 
@@ -228,6 +236,21 @@ function setupEventListeners() {
     setTimeout(() => els.copyBtn.textContent = 'LINK 🔗', 2000);
   });
 
+  els.closeRenameModal.addEventListener('click', () => {
+    els.renameModal.classList.add('hidden');
+    roomToRenameId = null;
+  });
+
+  els.renameForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newName = els.renameInput.value.trim();
+    if (newName && roomToRenameId) {
+      renameRoom(roomToRenameId, newName);
+      els.renameModal.classList.add('hidden');
+      roomToRenameId = null;
+    }
+  });
+
   window.addEventListener('hashchange', refreshFromHash);
 
   // Sync across tabs
@@ -310,8 +333,9 @@ function renderRoomList() {
 
     btn.addEventListener('click', (e) => {
       if (e.target.classList.contains('rename-btn')) {
-        const newName = prompt('Enter new name for room:', room.name);
-        if (newName) renameRoom(room.id, newName);
+        roomToRenameId = room.id;
+        els.renameInput.value = room.name;
+        els.renameModal.classList.remove('hidden');
         return;
       }
       switchRoom(room.id);

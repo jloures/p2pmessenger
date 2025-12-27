@@ -37,7 +37,7 @@ test.describe('P2P Messenger UI Tests', () => {
         const sidebar = page.locator('#sidebar');
         const toggle = page.locator('#sidebar-toggle');
 
-        await expect(sidebar).toHaveClass(/transform/);
+        await expect(sidebar).toHaveClass(/sidebar-smooth/);
         await toggle.click();
         await expect(sidebar).toHaveClass(/open/);
         await toggle.click();
@@ -84,12 +84,10 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.fill('#room-id', roomID);
         await page.click('#join-form button[type="submit"]');
 
-        page.on('dialog', async dialog => {
-            await dialog.accept(nickname);
-        });
-
         await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
         await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
+        await page.fill('#rename-input', nickname);
+        await page.click('#rename-form button[type="submit"]');
         await expect(page.locator('#display-room-id')).toHaveText(nickname.toUpperCase());
     });
 
@@ -101,12 +99,10 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.fill('#room-id', roomID);
         await page.click('#join-form button[type="submit"]');
 
-        page.on('dialog', async dialog => {
-            await dialog.accept(nickname);
-        });
-
         await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
         await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
+        await page.fill('#rename-input', nickname);
+        await page.click('#rename-form button[type="submit"]');
         await expect(page.locator('#peer-count')).toContainText(`ID: ${roomID}`);
     });
 
@@ -255,15 +251,17 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.click('#join-form button[type="submit"]');
 
         // First rename
-        page.once('dialog', async dialog => { await dialog.accept('Alpha'); });
         await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
         await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
+        await page.fill('#rename-input', 'Alpha');
+        await page.click('#rename-form button[type="submit"]');
         await expect(page.locator('#display-room-id')).toHaveText('ALPHA');
 
         // Second rename
-        page.once('dialog', async dialog => { await dialog.accept('Beta'); });
         await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
         await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
+        await page.fill('#rename-input', 'Beta');
+        await page.click('#rename-form button[type="submit"]');
         await expect(page.locator('#display-room-id')).toHaveText('BETA');
     });
 
@@ -345,9 +343,10 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.fill('#room-id', roomID);
         await page.click('#join-form button[type="submit"]');
 
-        page.once('dialog', dialog => dialog.dismiss());
         await page.locator(`.room-item[data-room-id="${roomID}"]`).hover();
         await page.locator(`.rename-btn[data-id="${roomID}"]`).click({ force: true });
+
+        await page.click('#close-rename-modal');
 
         await expect(page.locator('#display-room-id')).toHaveText(roomID.toUpperCase());
     });

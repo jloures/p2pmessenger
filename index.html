@@ -16,10 +16,10 @@
 
   <div id="app" class="app-container">
     <button id="sidebar-toggle" aria-label="Toggle sidebar menu"
-      class="sm:hidden fixed top-4 left-4 z-50 bg-white px-3 py-1.5 rounded-xl border-4 border-[#1A1A1A] font-black text-xs toon-button shadow-[3px_3px_0px_#1A1A1A]">MENU</button>
+      class="fixed top-4 left-4 z-50 bg-white px-3 py-1.5 rounded-xl border-4 border-[#1A1A1A] font-black text-lg toon-button shadow-[3px_3px_0px_#1A1A1A]">☰</button>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar-smooth transform sm:translate-x-0 sm:relative">
+    <aside id="sidebar" class="sidebar-smooth">
       <header class="p-6 flex items-start gap-4 relative">
         <div class="relative flex-shrink-0">
           <img src="./favicon.png" alt="p2pmessenger"
@@ -103,30 +103,31 @@
       <!-- Join Room Modal -->
       <div id="join-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
         class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-        <div
-          class="bg-white w-full max-w-sm rounded-[32px] border-[6px] border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
-          <header class="bg-[#FFD93D] p-6 border-b-[6px] border-[#1A1A1A] flex justify-between items-center">
+        <div class="toon-modal">
+          <header class="toon-modal-header bg-[#FFD93D]">
             <h2 id="modal-title" class="text-2xl text-white">JOIN ROOM</h2>
             <button id="close-modal" aria-label="Close modal"
               class="text-[#1A1A1A] font-black text-3xl hover:scale-110 transition-transform">×</button>
           </header>
-          <form id="join-form" class="p-8 space-y-6">
+          <form id="join-form" class="toon-modal-body space-y-6">
             <div class="space-y-2">
-              <label for="room-id" class="block font-black text-[10px] uppercase ml-1 tracking-widest">Room Name /
+              <label for="room-id"
+                class="block font-black text-[10px] uppercase ml-1 tracking-widest text-[#1A1A1A]">Room Name /
                 ID</label>
               <div class="flex gap-3">
                 <input type="text" id="room-id" placeholder="e.g. secret-base" required class="flex-1 input-smooth" />
                 <button type="button" id="gen-room-btn" aria-label="Generate random room ID"
-                  class="bg-[#FFD93D] w-12 rounded-xl border-4 border-[#1A1A1A] toon-button font-bold text-xl flex items-center justify-center">🎲</button>
+                  class="bg-[#FFD93D] w-12 rounded-xl border-4 border-[#1A1A1A] toon-button font-bold text-xl flex items-center justify-center shadow-[2px_2px_0px_#1A1A1A]">🎲</button>
               </div>
             </div>
             <div class="space-y-2">
-              <label for="room-password" class="block font-black text-[10px] uppercase ml-1 tracking-widest">Secret
+              <label for="room-password"
+                class="block font-black text-[10px] uppercase ml-1 tracking-widest text-[#1A1A1A]">Secret
                 Passkey (Optional)</label>
               <input type="password" id="room-password" placeholder="••••••••" class="w-full input-smooth" />
             </div>
             <button type="submit"
-              class="w-full bg-[#6BCB77] text-[#1A1A1A] p-4 rounded-2xl border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] toon-button font-black text-lg uppercase tracking-tight">START
+              class="w-full bg-[#6BCB77] text-[#1A1A1A] p-4 rounded-2xl border-4 border-[#1A1A1A] shadow-[6px_6px_0px_#1A1A1A] toon-button font-black text-lg uppercase tracking-tight">START
               CHATTING</button>
           </form>
         </div>
@@ -139,31 +140,48 @@
       <!-- Identity Modal -->
       <div id="identity-modal" role="dialog" aria-modal="true" aria-labelledby="identity-title"
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
-        <div
-          class="bg-white w-full max-w-sm rounded-[40px] border-[8px] border-[#1A1A1A] shadow-[16px_16px_0px_#1A1A1A] overflow-hidden">
-          <header class="bg-[#4D96FF] p-8 border-b-[8px] border-[#1A1A1A] text-center">
+        <div class="toon-modal">
+          <header class="toon-modal-header bg-[#4D96FF]">
             <h2 id="identity-title" class="text-3xl text-white">WHO ARE YOU?</h2>
           </header>
-          <form id="identity-form" class="p-10 space-y-8">
+          <form id="identity-form" class="toon-modal-body space-y-8">
             <div class="space-y-3">
               <label for="identity-input" class="sr-only">Your Hero Name</label>
               <p class="text-xs font-black text-[#1A1A1A] uppercase tracking-widest text-center">Identity must be 4+
                 characters.</p>
               <input type="text" id="identity-input" placeholder="Your Hero Name..." required minlength="4"
-                class="w-full input-smooth text-xl text-center py-5 shadow-[6px_6px_0px_rgba(0,0,0,0.05)]" />
+                class="w-full input-smooth text-xl text-center py-5 shadow-[4px_4px_0px_rgba(0,0,0,0.05)]" />
             </div>
             <button type="submit"
-              class="w-full bg-[#FF6B6B] text-[#1A1A1A] p-5 rounded-[24px] border-[6px] border-[#1A1A1A] shadow-[10px_10px_0px_#1A1A1A] toon-button font-black text-2xl uppercase tracking-tighter">
+              class="w-full bg-[#FF6B6B] text-[#1A1A1A] p-5 rounded-[24px] border-[6px] border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] toon-button font-black text-2xl uppercase tracking-tighter">
               BATTLE START!
             </button>
           </form>
         </div>
       </div>
-    </main>
-  </div>
+      <!-- Rename Room Modal -->
+      <div id="rename-modal" role="dialog" aria-modal="true" aria-labelledby="rename-title"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div class="toon-modal">
+          <header class="toon-modal-header bg-[#FFD93D]">
+            <h2 id="rename-title" class="text-2xl text-white">RENAME ROOM</h2>
+            <button id="close-rename-modal" aria-label="Close modal"
+              class="text-[#1A1A1A] font-black text-3xl hover:scale-110 transition-transform">×</button>
+          </header>
+          <form id="rename-form" class="toon-modal-body space-y-6">
+            <div class="space-y-2">
+              <label for="rename-input"
+                class="block font-black text-[10px] uppercase ml-1 tracking-widest text-[#1A1A1A]">New Room Name</label>
+              <input type="text" id="rename-input" placeholder="e.g. My Secret Channel" required
+                class="w-full input-smooth" />
+            </div>
+            <button type="submit"
+              class="w-full bg-[#6BCB77] text-[#1A1A1A] p-4 rounded-2xl border-4 border-[#1A1A1A] shadow-[6px_6px_0px_#1A1A1A] toon-button font-black text-lg uppercase tracking-tight">CONFIRM</button>
+          </form>
+        </div>
+      </div>
 
-
-  <script type="module" src="./main.js"></script>
+      <script type="module" src="./main.js"></script>
 </body>
 
 </html>
