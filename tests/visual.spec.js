@@ -122,7 +122,7 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: Share Modal and Invite Feedback', async ({ page }) => {
-        // Need a room other than saved-messages to show share button
+        // Need a room other than self-messages to show share button
         await page.click('#show-join-modal');
         await page.fill('#room-id', 'visual-room');
         await page.click('#join-form button[type="submit"]');

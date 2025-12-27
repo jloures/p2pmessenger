@@ -40,8 +40,10 @@ test.describe('P2P Messenger Performance & Stress Tests', () => {
         // Wait for page load after reload
         await page.waitForSelector('#room-list');
 
+        // Since persistence is gone, reload should reset everything
+        // So we just check that we are back to default state
         const roomCount = await page.locator('.room-item').count();
-        expect(roomCount).toBeGreaterThanOrEqual(31); // 30 + personal room
+        expect(roomCount).toBe(1); // Only self-messages
 
         // Sidebar should be scrollable
         const isScrollable = await page.locator('#room-list').evaluate(el => el.scrollHeight > el.clientHeight);
@@ -49,23 +51,6 @@ test.describe('P2P Messenger Performance & Stress Tests', () => {
         await expect(page.locator('.room-item').last()).toBeVisible();
     });
 
-    test('Perf 3: Memory persistence of large message object', async ({ page }) => {
-        // Mock a very large history in localStorage
-        await page.evaluate(() => {
-            const bigHistory = Array.from({ length: 50 }, (_, i) => ({
-                text: 'A'.repeat(1000) + i, // 1KB per message
-                sender: 'BulkSender',
-                timestamp: Date.now(),
-                isOwn: false
-            }));
-            const messages = { 'saved-messages': bigHistory };
-            localStorage.setItem('p2p_messages', JSON.stringify(messages));
-            location.reload();
-        });
-
-        await expect(page.locator('.chat-bubble-left').first()).toContainText('A'.repeat(100));
-        await expect(page.locator('.chat-bubble-left')).toHaveCount(50);
-    });
 
     test('Perf 4: Rapid Input stress test (Typewriter)', async ({ page }) => {
         const input = page.locator('#message-input');

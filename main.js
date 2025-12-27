@@ -12,47 +12,12 @@ const APP_ID = 'p2pmsg-v2';
 window.P2PMessenger = P2PMessenger;
 window.messenger = null; // Exposed for testing/debugging
 let messenger = null; // Will be initialized per room
-// SCHEMA MIGRATION & INITIALIZATION
-const DATA_VERSION = '2';
-function migrateData() {
-  const currentVersion = localStorage.getItem('p2p_version');
-  if (currentVersion !== DATA_VERSION) {
-    console.log(`Migrating data from ${currentVersion || 'v1'} to v2...`);
 
-    // Example Migration: Add lastRead to rooms
-    let savedRooms = [];
-    try {
-      savedRooms = JSON.parse(localStorage.getItem('p2p_rooms')) || [];
-      savedRooms = savedRooms.map(room => ({
-        ...room,
-        lastRead: room.lastRead || Date.now()
-      }));
-      localStorage.setItem('p2p_rooms', JSON.stringify(savedRooms));
-    } catch (e) {
-      console.warn('Migration failed or no rooms to migrate');
-    }
+// No migration needed as we don't persist data anymore
 
-    localStorage.setItem('p2p_version', DATA_VERSION);
-  }
-}
-migrateData();
-
-let rooms = [];
-try {
-  rooms = JSON.parse(localStorage.getItem('p2p_rooms'));
-  if (!rooms || rooms.length === 0) {
-    rooms = [{ id: 'saved-messages', name: 'Personal Channel', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
-  }
-} catch (e) {
-  rooms = [{ id: 'saved-messages', name: 'Personal Channel', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
-}
-let activeRoomId = 'saved-messages';
+let rooms = [{ id: 'self-messages', name: 'Self-Messages', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
+let activeRoomId = 'self-messages';
 let roomMessages = {};
-try {
-  roomMessages = JSON.parse(localStorage.getItem('p2p_messages')) || {};
-} catch (e) {
-  roomMessages = {};
-}
 
 // Expose for testing/debugging
 window.utils = utils;
@@ -92,7 +57,7 @@ const els = {
   copyInviteBtn: getEl('copy-invite-btn'),
 };
 
-let myHandle = localStorage.getItem('p2p_handle') || '';
+let myHandle = '';
 
 // 4. INIT
 function init() {
@@ -117,7 +82,6 @@ function handleParams(params) {
   if (params.name) {
     myHandle = params.name;
     if (els.displayUsername) els.displayUsername.textContent = myHandle.toUpperCase();
-    localStorage.setItem('p2p_handle', myHandle);
     if (myHandle.length >= 4) {
       els.identityModal.classList.add('hidden');
       updatePersonalRoomName();
@@ -175,8 +139,7 @@ function setupEventListeners() {
     if (val.length >= 4) {
       myHandle = val;
       if (els.displayUsername) els.displayUsername.textContent = myHandle.toUpperCase();
-      updatePersonalRoomName();
-      localStorage.setItem('p2p_handle', myHandle);
+      // No localStorage saving
       els.identityModal.classList.add('hidden');
     }
   });
@@ -220,7 +183,7 @@ function setupEventListeners() {
   });
 
   els.leaveBtn.addEventListener('click', () => {
-    if (activeRoomId === 'saved-messages') return;
+    if (activeRoomId === 'self-messages') return;
     removeRoom(activeRoomId);
   });
 
@@ -267,61 +230,6 @@ function setupEventListeners() {
   });
 
   window.addEventListener('hashchange', refreshFromHash);
-
-  // Sync across tabs
-  window.addEventListener('storage', (e) => {
-    if (e.key === 'p2p_handle') {
-      myHandle = e.newValue || '';
-      if (els.displayUsername) els.displayUsername.textContent = (myHandle || '').toUpperCase();
-      updatePersonalRoomName();
-    }
-    if (e.key === 'p2p_rooms') {
-      const oldActiveRoomId = activeRoomId;
-      try {
-        rooms = JSON.parse(e.newValue) || [];
-      } catch (err) {
-        rooms = [];
-      }
-      renderRoomList();
-
-      // If our active room was deleted in another tab, kick us back to personal
-      const stillExists = rooms.some(r => r.id === activeRoomId);
-      if (!stillExists && activeRoomId !== 'saved-messages') {
-        switchRoom('saved-messages');
-      } else if (activeRoomId === oldActiveRoomId) {
-        // Refresh header if needed
-        const room = rooms.find(r => r.id === activeRoomId);
-        if (room) {
-          els.displayRoomId.textContent = (room.name || room.id).toUpperCase();
-        }
-      }
-    }
-    if (e.key === 'p2p_messages') {
-      try {
-        roomMessages = JSON.parse(e.newValue) || {};
-      } catch (err) {
-        roomMessages = {};
-      }
-      // If we are in a room, refresh the view to show new messages from other tab
-      // Note: This won't double messages because saveAndAppendMessage already handles the active view
-      // But it's good for history consistency
-      if (activeRoomId) {
-        const container = els.messagesContainer;
-        const scrollPos = container.scrollTop;
-        const atBottom = Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 50;
-
-        container.innerHTML = '';
-        const history = roomMessages[activeRoomId] || [];
-        history.forEach(msg => appendMessageUI(msg, msg.isOwn));
-
-        if (atBottom) {
-          container.scrollTop = container.scrollHeight;
-        } else {
-          container.scrollTop = scrollPos;
-        }
-      }
-    }
-  });
 }
 
 // 6. ROOM MANAGEMENT
@@ -371,48 +279,21 @@ function removeRoom(id) {
   rooms = rooms.filter(r => r.id !== id);
   saveRooms();
   renderRoomList();
-  switchRoom('saved-messages');
+  switchRoom('self-messages');
 }
 
 function updatePersonalRoomName() {
-  const personalRoom = rooms.find(r => r.id === 'saved-messages');
-  if (personalRoom) {
-    personalRoom.name = myHandle || 'Personal';
-    if (els.displayUsername) els.displayUsername.textContent = (myHandle || 'HERO').toUpperCase();
-    saveRooms();
-    renderRoomList();
-    if (activeRoomId === 'saved-messages') {
-      switchRoom(activeRoomId);
-    }
-  }
+  // We do NOT rename the self-messages room anymore.
+  // We ONLY update the handle in the variable and UI header.
+  if (els.displayUsername) els.displayUsername.textContent = (myHandle || 'HERO').toUpperCase();
 }
 
 function saveRooms() {
-  try {
-    localStorage.setItem('p2p_rooms', JSON.stringify(rooms));
-  } catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      console.error('LocalStorage quota exceeded! Cannot save rooms.');
-      appendSystemMessage('Memory full! Older chats might not be saved.');
-    }
-  }
+  // No-op: Persistence removed
 }
 
 function saveMessages() {
-  try {
-    localStorage.setItem('p2p_messages', JSON.stringify(roomMessages));
-  } catch (e) {
-    if (e.name === 'QuotaExceededError') {
-      console.error('LocalStorage quota exceeded! Cannot save messages.');
-      // Cleanup strategy: could delete oldest room messages here
-      appendSystemMessage('Memory full! Cleaning up old messages...');
-      const roomIds = Object.keys(roomMessages);
-      if (roomIds.length > 0) {
-        delete roomMessages[roomIds[0]];
-        saveMessages();
-      }
-    }
-  }
+  // No-op: Persistence removed
 }
 
 // 7. CHAT LOGIC
@@ -433,7 +314,7 @@ async function switchRoom(id) {
   els.peerCount.textContent = idSubtitle ? `${idSubtitle} ${baseStatus ? '• ' + baseStatus : ''}` : baseStatus;
 
   // Toggle visibility of share/exit buttons for personal room
-  const isPersonal = id === 'saved-messages';
+  const isPersonal = id === 'self-messages';
 
   // Explicitly set display instead of relying on class alone to ensure it works
   els.shareBtn.style.display = isPersonal ? 'none' : 'flex';
@@ -478,7 +359,7 @@ function initP2P(room) {
 }
 
 function handleSendMessage(text) {
-  const isPrivate = activeRoomId === 'saved-messages';
+  const isPrivate = activeRoomId === 'self-messages';
   const msg = {
     text,
     sender: myHandle || 'You',

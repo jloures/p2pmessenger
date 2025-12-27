@@ -13,8 +13,8 @@ test.describe('Network Resilience & Latency Simulation', () => {
         await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
     });
 
-    test('Network 1: App persists Personal Messages when network drops', async ({ context, page }) => {
-        await expect(page.locator('#display-room-id')).toContainText('NETHERO');
+    test('Network 1: App persists Self Messages when network drops', async ({ context, page }) => {
+        await expect(page.locator('#display-room-id')).toContainText('SELF-MESSAGES');
         await context.setOffline(true);
         await page.fill('#message-input', 'Local Note');
         await page.keyboard.press('Enter');
@@ -27,8 +27,8 @@ test.describe('Network Resilience & Latency Simulation', () => {
         await page.click('#join-form button[type="submit"]');
 
         await expect(page.locator('#display-room-id')).toHaveText('TEST-NET-ROOM');
-        // Should not be stuck on Saved Messages
-        await expect(page.locator('#peer-count')).not.toContainText('SAVED MESSAGES');
+        // Should not be stuck on Self Messages
+        await expect(page.locator('#peer-count')).not.toContainText('SELF-MESSAGES');
     });
 
     test('Network 3: UI remains responsive during a "Long Handshake" (Signaling Latency)', async ({ context, page }) => {
@@ -93,7 +93,7 @@ test.describe('Network Resilience & Latency Simulation', () => {
     });
 
     test('Network 8: Messaging locally still works even if Net is flaky', async ({ context, page }) => {
-        await page.click('[data-room-id="saved-messages"]');
+        await page.click('[data-room-id="self-messages"]');
         await context.setOffline(true);
 
         await page.fill('#message-input', 'Offline note');

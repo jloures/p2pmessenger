@@ -62,8 +62,8 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
 
         // 6. Leaving the Room
         await bobPage.evaluate(() => document.getElementById('leave-btn').click());
-        // Bob should be back in Saved Messages
-        await expect(bobPage.locator('#display-room-id')).toContainText('BOBTHEHERO', { timeout: 10000 });
+        // Bob should be back in Self Messages
+        await expect(bobPage.locator('#display-room-id')).toContainText('SELF-MESSAGES', { timeout: 10000 });
 
         // Alice should see Bob left
         await expect(alicePage.locator('#peer-count')).toContainText('1 HERO ONLINE', { timeout: 30000 });

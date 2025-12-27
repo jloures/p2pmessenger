@@ -16,19 +16,19 @@ test.describe('P2P Messenger UI Tests', () => {
     // 1. Initial State
     test('UI 1: Should display sidebar and User identity on load', async ({ page }) => {
         await expect(page.locator('#sidebar')).toBeVisible();
-        await expect(page.locator('#display-room-id')).toContainText('TESTHERO');
-        // The identity is now shown in the Personal Channel name
-        await expect(page.locator('.room-item.active')).toContainText('TestHero');
+        await expect(page.locator('.room-item.active')).toContainText('Self-Messages');
     });
 
     // 2. Persistence: Username
-    test('UI 2: Should persist username in localStorage', async ({ page }) => {
+    // 2. Persistence: Username (Should be CLEARED now)
+    test('UI 2: Should CLEAR username after reload', async ({ page }) => {
         const username = 'PersistenceHero';
         await page.click('#edit-profile-btn');
         await page.fill('#identity-input', username);
         await page.click('#identity-form button');
         await page.reload();
-        await expect(page.locator('#display-username')).toHaveText(username.toUpperCase());
+        // Since it's cleared, the identity modal should reappear or default state
+        await expect(page.locator('#identity-modal')).toBeVisible();
     });
 
     // 3. Mobile Interactions
@@ -122,8 +122,8 @@ test.describe('P2P Messenger UI Tests', () => {
 
         await page.click('[data-room-id="room-1"]');
         await expect(page.locator('#display-room-id')).toHaveText('ROOM-1');
-        await page.click('[data-room-id="saved-messages"]');
-        await expect(page.locator('#display-room-id')).toContainText('TESTHERO');
+        await page.click('[data-room-id="self-messages"]');
+        await expect(page.locator('#display-room-id')).toContainText('SELF-MESSAGES');
     });
 
     // 12. Leaving Rooms
@@ -134,7 +134,7 @@ test.describe('P2P Messenger UI Tests', () => {
 
         await page.click('#leave-btn');
         await expect(page.locator('#room-list')).not.toContainText('bye-bye');
-        await expect(page.locator('#display-room-id')).toContainText('TESTHERO');
+        await expect(page.locator('#display-room-id')).toContainText('SELF-MESSAGES');
     });
 
     // 13. Clipboard Feedback via Share Modal
@@ -163,12 +163,15 @@ test.describe('P2P Messenger UI Tests', () => {
     });
 
     // 15. Message History Persistence (Local)
-    test('UI 15: Should persist Saved-Messages history after reload', async ({ page }) => {
+    // 15. No Message History Persistence
+    test('UI 15: Should CLEAR Self-Messages history after reload', async ({ page }) => {
         const msg = 'My private note';
         await page.fill('#message-input', msg);
         await page.keyboard.press('Enter');
         await page.reload();
-        await expect(page.locator('#messages-container')).toContainText(msg);
+        // Should be gone
+        await expect(page.locator('#messages-container')).not.toContainText(msg);
+        // Should be back to initial state (potentially empty or system message if any)
     });
 
     // 16. Message Isolation
@@ -217,8 +220,8 @@ test.describe('P2P Messenger UI Tests', () => {
         const activeLink = page.locator('.room-item.active');
         await expect(activeLink).toContainText('active-test');
 
-        await page.click('[data-room-id="saved-messages"]');
-        await expect(activeLink).toContainText(/TestHero/);
+        await page.click('[data-room-id="self-messages"]');
+        await expect(activeLink).toContainText('Self-Messages');
     });
 
     // 21. Modal Validation
@@ -389,13 +392,14 @@ test.describe('P2P Messenger UI Tests', () => {
     });
 
     // 41. Profile Name Casing
-    test('UI 41: Profile name in sidebar should be uppercase in UI', async ({ page }) => {
+    test('UI 41: Self Messages room should NOT be renamed to profile name', async ({ page }) => {
         await page.click('#edit-profile-btn');
         await page.fill('#identity-input', 'bobby');
         await page.click('#identity-form button');
 
         await expect(page.locator('#display-username')).toHaveText('BOBBY');
-        await expect(page.locator('.room-item.active')).toContainText('bobby');
+        // But the room list item should stay 'Self-Messages'
+        await expect(page.locator('.room-item.active .room-name')).toHaveText('Self-Messages');
     });
 
     // 42. Multi-room message separation
@@ -406,7 +410,7 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.fill('#message-input', 'Hello 1');
         await page.keyboard.press('Enter');
 
-        await page.click('[data-room-id="saved-messages"]');
+        await page.click('[data-room-id="self-messages"]');
         await page.fill('#message-input', 'Personal Note');
         await page.keyboard.press('Enter');
 
