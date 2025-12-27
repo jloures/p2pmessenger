@@ -46,7 +46,7 @@
           <!-- Room Items go here -->
           <button class="room-item active" data-room-id="saved-messages">
             <span class="room-icon">⭐</span>
-            <span class="room-name">Saved Messages</span>
+            <span class="room-name">Saved-Messages</span>
           </button>
       </div>
   </div>
@@ -59,7 +59,8 @@
   <!-- Main Chat Area -->
   <main class="flex-1 flex flex-col min-w-0 bg-[#6BCB77]/10 relative">
     <!-- Mobile Header Toggle -->
-    <header class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex items-center justify-between sm:justify-end">
+    <header
+      class="bg-[#FFD93D] p-4 border-b-6 border-[#1A1A1A] flex items-center justify-between sm:justify-end relative z-30">
       <button id="sidebar-toggle" aria-label="Toggle sidebar menu"
         class="sm:hidden bg-white p-2 rounded-xl border-2 border-[#1A1A1A] font-black text-sm toon-button">MENU
         ☰</button>
@@ -127,6 +128,9 @@
             CHATTING</button>
         </form>
       </div>
+    </div>
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-20 hidden sm:hidden transition-opacity duration-300">
     </div>
   </main>
 

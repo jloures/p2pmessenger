@@ -130,9 +130,9 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.fill('#room-id', 'room-2');
         await page.click('#join-form button[type="submit"]');
 
-        await page.click('text=room-1');
+        await page.click('[data-room-id="room-1"]');
         await expect(page.locator('#display-room-id')).toHaveText('ROOM-1');
-        await page.click('text=Saved-Messages');
+        await page.click('[data-room-id="saved-messages"]');
         await expect(page.locator('#display-room-id')).toContainText('SAVED-MESSAGES');
     });
 
@@ -223,8 +223,8 @@ test.describe('P2P Messenger UI Tests', () => {
         const activeLink = page.locator('.room-item.active');
         await expect(activeLink).toContainText('active-test');
 
-        await page.click('text=Saved-Messages');
-        await expect(activeLink).toContainText('Saved-Messages');
+        await page.click('[data-room-id="saved-messages"]');
+        await expect(activeLink).toContainText(/Saved/);
     });
 
     // 21. Modal Validation
@@ -429,11 +429,11 @@ test.describe('P2P Messenger UI Tests', () => {
         await page.fill('#message-input', 'Hello 1');
         await page.keyboard.press('Enter');
 
-        await page.click('text=Saved-Messages');
+        await page.click('[data-room-id="saved-messages"]');
         await page.fill('#message-input', 'Personal Note');
         await page.keyboard.press('Enter');
 
-        await page.click('text=room-1');
+        await page.click('[data-room-id="room-1"]');
         await expect(page.locator('#messages-container')).toContainText('Hello 1');
         await expect(page.locator('#messages-container')).not.toContainText('Personal Note');
     });

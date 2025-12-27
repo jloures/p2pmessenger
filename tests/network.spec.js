@@ -37,10 +37,12 @@ test.describe('Network Resilience & Latency Simulation', () => {
         await page.click('#show-join-modal');
         await page.fill('#room-id', 'latent-room');
         await page.click('#join-form button[type="submit"]');
-
-        // Sidebar should still be toggleable (close it)
-        await page.click('#sidebar-toggle');
+        // Sidebar should auto-close on mobile join
         await expect(page.locator('#sidebar')).not.toHaveClass(/open/);
+
+        // Should still be toggleable (re-open it)
+        await page.click('#sidebar-toggle');
+        await expect(page.locator('#sidebar')).toHaveClass(/open/);
     });
 
     test('Network 4: Handles signaling server failure gracefully', async ({ context, page }) => {

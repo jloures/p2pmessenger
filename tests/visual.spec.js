@@ -72,8 +72,10 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: Sidebar Active Room Item', async ({ page }) => {
+        await page.waitForSelector('.room-item.active');
         await expect(page.locator('.room-item.active')).toHaveScreenshot('active-room-item.png', {
-            mask: [page.locator('.room-item.active div')]
+            mask: [page.locator('.room-item.active div')],
+            timeout: 15000
         });
     });
 

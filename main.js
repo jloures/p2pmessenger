@@ -11,16 +11,39 @@ const APP_ID = 'p2pmsg-v2';
 window.P2PMessenger = P2PMessenger;
 window.messenger = null; // Exposed for testing/debugging
 let messenger = null; // Will be initialized per room
-let myHandle = localStorage.getItem('p2p_handle') || '';
+// SCHEMA MIGRATION & INITIALIZATION
+const DATA_VERSION = '2';
+function migrateData() {
+  const currentVersion = localStorage.getItem('p2p_version');
+  if (currentVersion !== DATA_VERSION) {
+    console.log(`Migrating data from ${currentVersion || 'v1'} to v2...`);
+
+    // Example Migration: Add lastRead to rooms
+    let savedRooms = [];
+    try {
+      savedRooms = JSON.parse(localStorage.getItem('p2p_rooms')) || [];
+      savedRooms = savedRooms.map(room => ({
+        ...room,
+        lastRead: room.lastRead || Date.now()
+      }));
+      localStorage.setItem('p2p_rooms', JSON.stringify(savedRooms));
+    } catch (e) {
+      console.warn('Migration failed or no rooms to migrate');
+    }
+
+    localStorage.setItem('p2p_version', DATA_VERSION);
+  }
+}
+migrateData();
+
 let rooms = [];
 try {
-  rooms = JSON.parse(localStorage.getItem('p2p_rooms')) || [
-    { id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true }
-  ];
+  rooms = JSON.parse(localStorage.getItem('p2p_rooms'));
+  if (!rooms || rooms.length === 0) {
+    rooms = [{ id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
+  }
 } catch (e) {
-  rooms = [
-    { id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true }
-  ];
+  rooms = [{ id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true, lastRead: Date.now() }];
 }
 let activeRoomId = 'saved-messages';
 let roomMessages = {};
@@ -56,7 +79,11 @@ const els = {
   leaveBtn: getEl('leave-btn'),
   copyBtn: getEl('copy-room-btn'),
   profileName: getEl('profile-name'),
+  mainContent: document.querySelector('main'),
+  sidebarBackdrop: getEl('sidebar-backdrop'),
 };
+
+let myHandle = localStorage.getItem('p2p_handle') || '';
 
 // 4. INIT
 function init() {
@@ -92,8 +119,29 @@ function refreshFromHash() {
 
 // 5. EVENT LISTENERS
 function setupEventListeners() {
-  els.sidebarToggle.addEventListener('click', () => {
-    els.sidebar.classList.toggle('open');
+  els.sidebarToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = els.sidebar.classList.toggle('open');
+    if (window.innerWidth < 640) {
+      els.sidebarBackdrop.classList.toggle('hidden', !isOpen);
+    }
+  });
+
+  // Close sidebar when clicking backdrop on mobile
+  els.sidebarBackdrop.addEventListener('click', () => {
+    els.sidebar.classList.remove('open');
+    els.sidebarBackdrop.classList.add('hidden');
+  });
+
+  // Close sidebar when clicking any main content (backup)
+  els.mainContent.addEventListener('click', (e) => {
+    if (window.innerWidth < 640 && els.sidebar.classList.contains('open')) {
+      // Don't close if Clicking the toggle itself (handled above)
+      if (!els.sidebarToggle.contains(e.target)) {
+        els.sidebar.classList.remove('open');
+        els.sidebarBackdrop.classList.add('hidden');
+      }
+    }
   });
 
   els.usernameInput.addEventListener('input', (e) => {
@@ -124,6 +172,10 @@ function setupEventListeners() {
       els.joinModal.classList.add('hidden');
       els.joinForm.reset();
       switchRoom(id);
+      if (window.innerWidth < 640) {
+        els.sidebar.classList.remove('open');
+        els.sidebarBackdrop.classList.add('hidden');
+      }
     }
   });
 
@@ -188,7 +240,10 @@ function renderRoomList() {
         return;
       }
       switchRoom(room.id);
-      if (window.innerWidth < 640) els.sidebar.classList.remove('open');
+      if (window.innerWidth < 640) {
+        els.sidebar.classList.remove('open');
+        els.sidebarBackdrop.classList.add('hidden');
+      }
     });
 
     li.appendChild(btn);
@@ -223,7 +278,31 @@ function renameRoom(id, newName) {
 }
 
 function saveRooms() {
-  localStorage.setItem('p2p_rooms', JSON.stringify(rooms));
+  try {
+    localStorage.setItem('p2p_rooms', JSON.stringify(rooms));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      console.error('LocalStorage quota exceeded! Cannot save rooms.');
+      appendSystemMessage('Memory full! Older chats might not be saved.');
+    }
+  }
+}
+
+function saveMessages() {
+  try {
+    localStorage.setItem('p2p_messages', JSON.stringify(roomMessages));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      console.error('LocalStorage quota exceeded! Cannot save messages.');
+      // Cleanup strategy: could delete oldest room messages here
+      appendSystemMessage('Memory full! Cleaning up old messages...');
+      const roomIds = Object.keys(roomMessages);
+      if (roomIds.length > 0) {
+        delete roomMessages[roomIds[0]];
+        saveMessages();
+      }
+    }
+  }
 }
 
 // 7. CHAT LOGIC
@@ -305,8 +384,7 @@ function saveAndAppendMessage(roomId, data, isOwn) {
 
   // Keep only last 50 messages per room to save localStorage space
   if (roomMessages[roomId].length > 50) roomMessages[roomId].shift();
-
-  localStorage.setItem('p2p_messages', JSON.stringify(roomMessages));
+  saveMessages();
 
   if (activeRoomId === roomId) {
     appendMessageUI(data, isOwn);
