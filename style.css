@@ -75,8 +75,9 @@ h2 {
 @media (max-width: 639px) {
   #sidebar-toggle {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 24px;
+    /* Aligned with header p-6 */
+    left: 24px;
     z-index: 100;
     width: 48px;
     height: 48px;
@@ -104,7 +105,8 @@ h2 {
   }
 
   .sidebar-smooth.open~#sidebar-toggle {
-    left: calc(var(--sidebar-width) - 60px);
+    left: calc(var(--sidebar-width) - 72px);
+    /* 320 - 24 - 48 = 248 */
     background-color: var(--toon-red);
   }
 
@@ -140,7 +142,8 @@ h2 {
   }
 
   .sidebar-smooth header {
-    padding-top: 84px !important;
+    padding-top: 24px !important;
+    /* Re-aligned with p-6 */
   }
 
   #display-room-id,

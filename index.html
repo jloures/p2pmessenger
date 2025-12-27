@@ -20,14 +20,14 @@
     <aside id="sidebar" class="sidebar-smooth">
       <header class="p-6 pb-2">
         <div class="flex items-center justify-between mb-4">
-          <div class="relative">
+          <button id="edit-profile-btn" aria-label="Edit Profile" class="relative group toon-button">
             <img src="./favicon.png" alt="p2pmessenger"
-              class="w-12 h-12 rounded-2xl border-4 border-[#1A1A1A] bg-white shadow-[4px_4px_0px_#1A1A1A]" />
+              class="w-12 h-12 rounded-2xl border-4 border-[#1A1A1A] bg-white shadow-[4px_4px_0px_#1A1A1A] group-active:translate-x-0.5 group-active:translate-y-0.5 group-active:shadow-none transition-all" />
             <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#6BCB77] border-2 border-[#1A1A1A] rounded-full"></div>
-          </div>
-          <button id="edit-profile-btn" aria-label="Edit Profile"
-            class="w-10 h-10 bg-white border-4 border-[#1A1A1A] rounded-2xl flex items-center justify-center toon-button shadow-[3px_3px_0px_#1A1A1A] text-lg">
-            👤
+            <div
+              class="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-2xl transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+              <span class="text-xs">⚙️</span>
+            </div>
           </button>
         </div>
         <div class="flex flex-col gap-1">
@@ -60,7 +60,7 @@
       </footer>
     </aside>
 
-    <button id="sidebar-toggle" aria-label="Toggle sidebar menu" class="fixed top-5 left-5 z-[100] sm:hidden">
+    <button id="sidebar-toggle" aria-label="Toggle sidebar menu" class="fixed z-[100] sm:hidden">
       <span class="burger-span"></span>
       <span class="burger-span"></span>
       <span class="burger-span"></span>
