@@ -6,6 +6,12 @@ test.describe('Visual Regression Tests', () => {
         // Set a fixed viewport before goto
         await page.setViewportSize({ width: 1280, height: 800 });
         await page.goto('/');
+        // Handle identity modal if it appears
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'VisualHero');
+            await page.click('#identity-form button');
+        }
         await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
         // Wait for fonts/styles to load
         await page.waitForLoadState('networkidle');
@@ -63,12 +69,15 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: System Message Styling', async ({ page }) => {
-        // Trigger system message by joining without handle
-        await page.fill('#username', '');
-        await page.click('#show-join-modal');
-        await page.fill('#room-id', 'sys-visual');
-        await page.click('#join-form button[type="submit"]');
-        await expect(page.locator('.system-message').first()).toHaveScreenshot('system-message.png');
+        await page.evaluate(() => {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = 'system-message';
+            div.textContent = 'SYSTEM MESSAGE STYLE CHECK';
+            container.appendChild(div);
+        });
+        await expect(page.locator('.system-message')).toHaveScreenshot('system-message.png');
     });
 
     test('Visual: Sidebar Active Room Item', async ({ page }) => {
@@ -91,7 +100,7 @@ test.describe('Visual Regression Tests', () => {
 
     test('Visual: Profile Identity in Sidebar', async ({ page }) => {
         await page.fill('#username', 'SUPER HERO');
-        await expect(page.locator('header.p-6')).toHaveScreenshot('sidebar-profile-header.png');
+        await expect(page.locator('#sidebar header')).toHaveScreenshot('sidebar-profile-header.png');
     });
 
     test('Visual: Sidebar Footer Version', async ({ page }) => {
@@ -135,6 +144,10 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: Exit Button Styling', async ({ page }) => {
+        // Join a room so exit button is visible
+        await page.click('#show-join-modal');
+        await page.fill('#room-id', 'visual-room');
+        await page.click('#join-form button[type="submit"]');
         await expect(page.locator('#leave-btn')).toHaveScreenshot('exit-button.png');
     });
 

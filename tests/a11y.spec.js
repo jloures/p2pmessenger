@@ -5,6 +5,11 @@ test.describe('Accessibility (a11y) Audits', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'A11yHero');
+            await page.click('#identity-form button');
+        }
     });
 
     // 1. Full Page Automated Audit

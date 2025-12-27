@@ -4,6 +4,12 @@ test.describe('P2P Messenger Functional Tests', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
+        // Handle identity modal if it appears
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'FunctionHero');
+            await page.click('#identity-form button');
+        }
     });
 
     test('P2PMessenger class should be available on window', async ({ page }) => {

@@ -5,6 +5,12 @@ test.describe('Security & Cryptographic Verification', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
+        // Handle identity modal if it appears
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'SecurityHero');
+            await page.click('#identity-form button');
+        }
         await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
     });
 
@@ -30,7 +36,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextA = await browser.newContext();
         const pageA = await contextA.newPage();
         await pageA.goto('/');
-        await pageA.fill('#username', 'Alice');
+        const aliceModal = pageA.locator('#identity-modal');
+        if (await aliceModal.isVisible()) {
+            await pageA.fill('#identity-input', 'AliceHero');
+            await pageA.click('#identity-form button');
+        }
+        await pageA.fill('#username', 'AliceHero');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
         await pageA.fill('#room-password', 'key-alpha');
@@ -40,7 +51,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextB = await browser.newContext();
         const pageB = await contextB.newPage();
         await pageB.goto('/');
-        await pageB.fill('#username', 'Bob');
+        const bobModal = pageB.locator('#identity-modal');
+        if (await bobModal.isVisible()) {
+            await pageB.fill('#identity-input', 'BobHero');
+            await pageB.click('#identity-form button');
+        }
+        await pageB.fill('#username', 'BobHero');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', roomName);
         await pageB.fill('#room-password', 'key-beta');
@@ -55,7 +71,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextC = await browser.newContext();
         const pageC = await contextC.newPage();
         await pageC.goto('/');
-        await pageC.fill('#username', 'Charlie');
+        const charlieModal = pageC.locator('#identity-modal');
+        if (await charlieModal.isVisible()) {
+            await pageC.fill('#identity-input', 'CharlieHero');
+            await pageC.click('#identity-form button');
+        }
+        await pageC.fill('#username', 'CharlieHero');
         await pageC.click('#show-join-modal');
         await pageC.fill('#room-id', roomName);
         await pageC.fill('#room-password', 'key-alpha');
@@ -81,7 +102,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextA = await browser.newContext();
         const pageA = await contextA.newPage();
         await pageA.goto('/');
-        await pageA.fill('#username', 'Alice');
+        const aliceModal2 = pageA.locator('#identity-modal');
+        if (await aliceModal2.isVisible()) {
+            await pageA.fill('#identity-input', 'AliceHero');
+            await pageA.click('#identity-form button');
+        }
+        await pageA.fill('#username', 'AliceHero');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
         await pageA.fill('#room-password', 'top-secret-1');
@@ -91,7 +117,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextE = await browser.newContext();
         const pageE = await contextE.newPage();
         await pageE.goto('/');
-        await pageE.fill('#username', 'Eve');
+        const eveModal = pageE.locator('#identity-modal');
+        if (await eveModal.isVisible()) {
+            await pageE.fill('#identity-input', 'EveHero');
+            await pageE.click('#identity-form button');
+        }
+        await pageE.fill('#username', 'EveHero');
         await pageE.click('#show-join-modal');
         await pageE.fill('#room-id', roomName);
         await pageE.fill('#room-password', 'wrong-key');
@@ -139,6 +170,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const context = await browser.newContext();
         const page = await context.newPage();
         await page.goto('/');
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'SecurityHero');
+            await page.click('#identity-form button');
+        }
+        await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         // Join Room 1
         await page.click('#show-join-modal');
@@ -164,7 +201,12 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextA = await browser.newContext();
         const pageA = await contextA.newPage();
         await pageA.goto('/');
-        await pageA.fill('#username', '<b id="evil">Alice</b>');
+        const aliceModal = pageA.locator('#identity-modal');
+        if (await aliceModal.isVisible()) {
+            await pageA.fill('#identity-input', 'AliceHero');
+            await pageA.click('#identity-form button');
+        }
+        await pageA.fill('#username', '<b id="evil">AliceHero</b>');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', 'sanitize-test');
         await pageA.click('#join-form button[type="submit"]');
@@ -172,13 +214,18 @@ test.describe('Security & Cryptographic Verification', () => {
         const contextB = await browser.newContext();
         const pageB = await contextB.newPage();
         await pageB.goto('/');
-        await pageB.fill('#username', 'Bob');
+        const bobModal = pageB.locator('#identity-modal');
+        if (await bobModal.isVisible()) {
+            await pageB.fill('#identity-input', 'BobHero');
+            await pageB.click('#identity-form button');
+        }
+        await pageB.fill('#username', 'BobHero');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', 'sanitize-test');
         await pageB.click('#join-form button[type="submit"]');
 
         // Bob should see Alice's name (sanitized, so tags are visible as text)
-        await expect(pageB.locator('#messages-container')).toContainText('ALICE', { timeout: 15000 });
+        await expect(pageB.locator('#messages-container')).toContainText('ALICEHERO', { timeout: 15000 });
         await expect(pageB.locator('#messages-container')).toContainText('JOINED');
         const evilElement = await pageB.locator('#evil').count();
         expect(evilElement).toBe(0);

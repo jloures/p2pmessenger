@@ -46,7 +46,7 @@
           <!-- Room Items go here -->
           <button class="room-item active" data-room-id="saved-messages">
             <span class="room-icon">⭐</span>
-            <span class="room-name">Saved-Messages</span>
+            <span class="room-name">Personal Channel</span>
           </button>
       </div>
   </div>
@@ -131,6 +131,26 @@
     </div>
     <!-- Sidebar Backdrop (Mobile) -->
     <div id="sidebar-backdrop" class="fixed inset-0 bg-black/20 z-20 hidden sm:hidden transition-opacity duration-300">
+    </div>
+
+    <!-- Identity Modal (Overlay) -->
+    <div id="identity-modal" role="dialog" aria-modal="true" aria-labelledby="identity-title"
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md hidden">
+      <div
+        class="bg-white w-full max-w-sm rounded-3xl border-6 border-[#1A1A1A] shadow-[12px_12px_0px_#1A1A1A] overflow-hidden">
+        <header class="bg-[#4D96FF] p-6 border-b-6 border-[#1A1A1A]">
+          <h2 id="identity-title" class="text-2xl text-white">CHOOSE YOUR HERO NAME</h2>
+        </header>
+        <form id="identity-form" class="p-8 space-y-6">
+          <p class="text-xs font-bold text-[#1A1A1A] uppercase tracking-wider">Identity must be 4+ characters.</p>
+          <input type="text" id="identity-input" placeholder="Enter Name..." required minlength="4"
+            class="w-full p-4 rounded-xl border-4 border-[#1A1A1A] font-bold outline-none focus:ring-4 focus:ring-[#4D96FF] text-lg" />
+          <button type="submit"
+            class="w-full bg-[#FF6B6B] text-[#1A1A1A] p-4 rounded-xl border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A] toon-button font-black text-lg uppercase">
+            START MY JOURNEY
+          </button>
+        </form>
+      </div>
     </div>
   </main>
 

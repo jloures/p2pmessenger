@@ -8,6 +8,11 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await aliceContext.grantPermissions(['clipboard-read', 'clipboard-write']);
         const alicePage = await aliceContext.newPage();
         await alicePage.goto('/');
+        const aliceModal = alicePage.locator('#identity-modal');
+        if (await aliceModal.isVisible()) {
+            await alicePage.fill('#identity-input', 'Alice');
+            await alicePage.click('#identity-form button');
+        }
         await alicePage.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         const roomName = `e2e-room-${Math.random().toString(36).substring(7)}`;
@@ -29,11 +34,11 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         const bobContext = await browser.newContext();
         const bobPage = await bobContext.newPage();
         await bobPage.setViewportSize({ width: 1280, height: 720 });
-        await bobPage.goto(`${shareLink}&name=Bob`);
+        await bobPage.goto(`${shareLink}&name=BobTheHero`);
         await bobPage.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         await expect(bobPage.locator('#display-room-id')).toHaveText(roomName.toUpperCase());
-        await bobPage.fill('#username', 'Bob');
+        await bobPage.fill('#username', 'BobTheHero');
 
         // 4. Verification of Connection
         await expect(alicePage.locator('#peer-count')).toContainText('2 HEROES ONLINE', { timeout: 45000 });
@@ -53,11 +58,11 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         // 6. Leaving the Room
         await bobPage.evaluate(() => document.getElementById('leave-btn').click());
         // Bob should be back in Saved Messages
-        await expect(bobPage.locator('#display-room-id')).toContainText('SAVED-MESSAGES', { timeout: 10000 });
+        await expect(bobPage.locator('#display-room-id')).toContainText('BOBTHEHERO', { timeout: 10000 });
 
         // Alice should see Bob left
         await expect(alicePage.locator('#peer-count')).toContainText('1 HERO ONLINE', { timeout: 30000 });
-        await expect(alicePage.locator('#messages-container')).toContainText('BOB LEFT', { timeout: 15000 });
+        await expect(alicePage.locator('#messages-container')).toContainText('BOBTHEHERO LEFT', { timeout: 15000 });
 
         await aliceContext.close();
         await bobContext.close();
@@ -70,8 +75,13 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         const contextA = await browser.newContext();
         const pageA = await contextA.newPage();
         await pageA.goto('/');
+        const aliceModal = pageA.locator('#identity-modal');
+        if (await aliceModal.isVisible()) {
+            await pageA.fill('#identity-input', 'AliceHero');
+            await pageA.click('#identity-form button');
+        }
         await pageA.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
-        await pageA.fill('#username', 'Alice');
+        await pageA.fill('#username', 'AliceHero');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
         await pageA.fill('#room-password', 'password-A');
@@ -81,8 +91,13 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         const contextB = await browser.newContext();
         const pageB = await contextB.newPage();
         await pageB.goto('/');
+        const bobModal = pageB.locator('#identity-modal');
+        if (await bobModal.isVisible()) {
+            await pageB.fill('#identity-input', 'BobHero');
+            await pageB.click('#identity-form button');
+        }
         await pageB.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
-        await pageB.fill('#username', 'Bob');
+        await pageB.fill('#username', 'BobHero');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', roomName);
         await pageB.fill('#room-password', 'password-B');

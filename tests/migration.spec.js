@@ -7,6 +7,12 @@ test.describe('Data Migration & Schema Evolution Tests', () => {
         await page.goto('/');
         await page.evaluate(() => localStorage.clear());
         await page.reload();
+        // Handle identity modal if it appears
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'MigrateHero');
+            await page.click('#identity-form button');
+        }
         await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
     });
 

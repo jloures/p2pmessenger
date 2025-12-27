@@ -81,12 +81,21 @@ const els = {
   profileName: getEl('profile-name'),
   mainContent: document.querySelector('main'),
   sidebarBackdrop: getEl('sidebar-backdrop'),
+  identityModal: getEl('identity-modal'),
+  identityForm: getEl('identity-form'),
+  identityInput: getEl('identity-input'),
 };
 
 let myHandle = localStorage.getItem('p2p_handle') || '';
 
 // 4. INIT
 function init() {
+  if (myHandle.length < 4) {
+    els.identityModal.classList.remove('hidden');
+  } else {
+    updatePersonalRoomName();
+  }
+
   els.usernameInput.value = myHandle;
   updateProfileDisplay();
   renderRoomList();
@@ -145,9 +154,26 @@ function setupEventListeners() {
   });
 
   els.usernameInput.addEventListener('input', (e) => {
-    myHandle = e.target.value.trim();
-    updateProfileDisplay();
-    localStorage.setItem('p2p_handle', myHandle);
+    const val = e.target.value.trim();
+    if (val.length >= 4) {
+      myHandle = val;
+      updateProfileDisplay();
+      updatePersonalRoomName();
+      localStorage.setItem('p2p_handle', myHandle);
+    }
+  });
+
+  els.identityForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = els.identityInput.value.trim();
+    if (val.length >= 4) {
+      myHandle = val;
+      els.usernameInput.value = myHandle;
+      updateProfileDisplay();
+      updatePersonalRoomName();
+      localStorage.setItem('p2p_handle', myHandle);
+      els.identityModal.classList.add('hidden');
+    }
   });
 
   els.showJoinModal.addEventListener('click', () => {
@@ -266,6 +292,7 @@ function removeRoom(id) {
 }
 
 function renameRoom(id, newName) {
+  if (id === 'saved-messages') return; // Cannot rename personal room here
   const room = rooms.find(r => r.id === id);
   if (room) {
     room.name = newName;
@@ -273,6 +300,18 @@ function renameRoom(id, newName) {
     renderRoomList();
     if (activeRoomId === id) {
       switchRoom(id);
+    }
+  }
+}
+
+function updatePersonalRoomName() {
+  const personalRoom = rooms.find(r => r.id === 'saved-messages');
+  if (personalRoom) {
+    personalRoom.name = myHandle || 'Personal';
+    saveRooms();
+    renderRoomList();
+    if (activeRoomId === 'saved-messages') {
+      switchRoom(activeRoomId);
     }
   }
 }
@@ -319,8 +358,13 @@ async function switchRoom(id) {
   els.displayRoomId.textContent = (room?.name || id).toUpperCase();
 
   const idSubtitle = (room && room.name.toLowerCase() !== room.id.toLowerCase()) ? `ID: ${room.id}` : '';
-  const baseStatus = room?.isPrivate ? 'SAVED MESSAGES' : 'CONNECTING...';
+  const baseStatus = room?.isPrivate ? 'PRIVATE CHANNEL' : 'CONNECTING...';
   els.peerCount.textContent = idSubtitle ? `${idSubtitle} • ${baseStatus}` : baseStatus;
+
+  // Toggle visibility of share/exit buttons for personal room
+  const isPersonal = id === 'saved-messages';
+  els.copyBtn.classList.toggle('hidden', isPersonal);
+  els.leaveBtn.classList.toggle('hidden', isPersonal);
 
   // Clear messages container and load history
   els.messagesContainer.innerHTML = '';

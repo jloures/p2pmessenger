@@ -13,6 +13,11 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'FuzzHero');
+            await page.click('#identity-form button');
+        }
     });
 
     // --- Existing Tests (1-7) ---
@@ -130,7 +135,7 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
         });
         await page.reload();
         // App should still load default Saved-Messages
-        await expect(page.locator('#display-room-id')).toContainText('SAVED-MESSAGES');
+        await expect(page.locator('#display-room-id')).toContainText('FUZZHERO');
     });
 
     test('Fuzz: Rapid Navigation (Back/Forward)', async ({ page }) => {

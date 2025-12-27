@@ -4,11 +4,17 @@ test.describe('Network Resilience & Latency Simulation', () => {
 
     test.beforeEach(async ({ page }) => {
         await page.goto('/');
+        // Handle identity modal if it appears
+        const modal = page.locator('#identity-modal');
+        if (await modal.isVisible()) {
+            await page.fill('#identity-input', 'NetHero');
+            await page.click('#identity-form button');
+        }
         await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
     });
 
-    test('Network 1: App persists Saved Messages when network drops', async ({ context, page }) => {
-        await expect(page.locator('#display-room-id')).toContainText('SAVED-MESSAGES');
+    test('Network 1: App persists Personal Messages when network drops', async ({ context, page }) => {
+        await expect(page.locator('#display-room-id')).toContainText('NETHERO');
         await context.setOffline(true);
         await page.fill('#message-input', 'Local Note');
         await page.keyboard.press('Enter');
