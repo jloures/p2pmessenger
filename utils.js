@@ -15,7 +15,10 @@ export const escapeHtml = (text) => {
 };
 
 export const generateRoomId = () => {
-    return 'room-' + Math.random().toString(36).substring(2, 9);
+    const array = new Uint32Array(3);
+    const cryptoObj = (typeof window !== 'undefined' ? window.crypto : globalThis.crypto);
+    cryptoObj.getRandomValues(array);
+    return 'room-' + Array.from(array).map(b => b.toString(36)).join('').substring(0, 15);
 };
 
 export const formatTime = (timestamp) => {

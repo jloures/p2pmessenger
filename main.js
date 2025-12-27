@@ -9,6 +9,7 @@ const APP_ID = 'p2pmsg-v2';
 
 // 2. STATE
 window.P2PMessenger = P2PMessenger;
+window.messenger = null; // Exposed for testing/debugging
 let messenger = null; // Will be initialized per room
 let myHandle = localStorage.getItem('p2p_handle') || '';
 let rooms = [];
@@ -230,6 +231,7 @@ async function switchRoom(id) {
   if (messenger) {
     messenger.leave();
     messenger = null;
+    window.messenger = null;
   }
 
   activeRoomId = id;

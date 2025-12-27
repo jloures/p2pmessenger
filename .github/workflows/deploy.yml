@@ -152,6 +152,25 @@ jobs:
       - name: Run Network Tests
         run: npm run test:network
 
+  # Job 2.10: Security & Crypto Tests
+  test-security:
+    name: Security & Crypto Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run Security Tests
+        run: npm run test:security
+
   # Job 3: Full End-to-End Journeys
   test-e2e:
     name: E2E Journey Tests
@@ -175,7 +194,7 @@ jobs:
   deploy:
     name: Deploy to Production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test-core, test-ui, test-unit, test-fuzz, test-visual, test-a11y, test-network, test-e2e]
+    needs: [test-core, test-ui, test-unit, test-fuzz, test-visual, test-a11y, test-network, test-security, test-e2e]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
