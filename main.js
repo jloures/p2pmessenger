@@ -224,7 +224,7 @@ function setupEventListeners() {
 
     const originalText = els.copyBtn.textContent;
     els.copyBtn.textContent = 'COPIED! ✅';
-    setTimeout(() => els.copyBtn.textContent = originalText, 2000);
+    setTimeout(() => els.copyBtn.textContent = 'LINK 🔗', 2000);
   });
 
   window.addEventListener('hashchange', refreshFromHash);
@@ -301,10 +301,10 @@ function renderRoomList() {
     btn.innerHTML = `
       <span class="room-icon" aria-hidden="true">${room.icon || '💬'}</span>
       <div class="flex-1 min-w-0">
-        <div class="room-name truncate">${room.name}</div>
-        <div class="text-[10px] truncate text-[#1A1A1A]">${room.id}</div>
+        <div class="room-name truncate text-sm font-black">${room.name}</div>
+        <div class="text-[9px] truncate text-[#1A1A1A] opacity-50 uppercase font-black tracking-tighter">${room.id}</div>
       </div>
-      ${!room.isPrivate ? `<button class="rename-btn text-xs opacity-0 group-hover:opacity-100" data-id="${room.id}" aria-label="Rename room ${room.name}">✏️</button>` : ''}
+      ${!room.isPrivate ? `<button class="rename-btn text-[10px] w-6 h-6 rounded-lg opacity-0 bg-[#FFD93D] border-2 border-[#1A1A1A] group-hover:opacity-100 transition-opacity" data-id="${room.id}" aria-label="Rename room ${room.name}">✏️</button>` : ''}
     `;
 
     btn.addEventListener('click', (e) => {
@@ -499,10 +499,10 @@ function appendMessageUI(data, isOwn) {
   const sender = isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero');
 
   div.innerHTML = `
-    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-[10px] font-black uppercase text-[#1A1A1A]">${sender}</span>
-    <div class="p-3 ${isOwn ? 'bg-[#4D96FF] chat-bubble-right text-[#1A1A1A] border-4 border-[#1A1A1A]' : 'bg-white chat-bubble-left text-[#1A1A1A]'} font-bold">
-      ${utils.escapeHtml(data.text || '')}
-      <span class="message-meta text-[10px] mt-1 text-[#1A1A1A]">${time}</span>
+    <span class="${isOwn ? 'mr-3' : 'ml-3'} mb-1.5 text-[10px] font-black uppercase text-[#1A1A1A] opacity-60 tracking-widest">${sender}</span>
+    <div class="${isOwn ? 'chat-bubble-right' : 'chat-bubble-left'}">
+      <div class="text-sm md:text-base">${utils.escapeHtml(data.text || '')}</div>
+      <span class="message-meta">${time}</span>
     </div>
   `;
 

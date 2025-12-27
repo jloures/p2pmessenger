@@ -4,6 +4,10 @@
   --toon-red: #FF6B6B;
   --toon-sky: #4D96FF;
   --toon-black: #1A1A1A;
+  --sidebar-width: 320px;
+  --border-thick: 4px;
+  /* Reduced from 6px for cleaner look */
+  --border-outer: 6px;
 }
 
 * {
@@ -18,29 +22,91 @@ body {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  color: var(--toon-black);
 }
 
 h1,
 h2 {
   font-family: 'Fredoka One', cursive;
-  -webkit-text-stroke: 2px var(--toon-black);
+  -webkit-text-stroke: 1.5px var(--toon-black);
   paint-order: stroke fill;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
+/* Smooth Layout Components */
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: white;
+  border: var(--border-outer) solid var(--toon-black);
+  /* Outer frame */
+}
+
+.sidebar-smooth {
+  width: var(--sidebar-width);
+  background-color: var(--toon-yellow);
+  border-right: var(--border-thick) solid var(--toon-black);
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-smooth {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: #f8fafc;
+  /* Subtle off-white for main area like Slack */
+}
+
+@media (max-width: 639px) {
+  #sidebar-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 50;
+    /* Above everything else */
+  }
+}
+
+.header-smooth {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  background-color: white;
+  border-bottom: var(--border-thick) solid var(--toon-black);
+}
+
+.footer-smooth {
+  padding: 20px 24px;
+  background-color: white;
+  border-top: var(--border-thick) solid var(--toon-black);
+}
+
+/* Toon Elements */
 .toon-border {
-  border: 6px solid var(--toon-black);
+  border: var(--border-outer) solid var(--toon-black);
   box-shadow: 8px 8px 0px var(--toon-black);
 }
 
 .toon-button {
   cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toon-button:hover {
+  transform: translateY(-2px);
 }
 
 .toon-button:active {
   transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px var(--toon-black) !important;
+  box-shadow: 0px 0px 0px var(--toon-black) !important;
 }
 
 .room-item {
@@ -48,90 +114,71 @@ h2 {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
-  border-radius: 16px;
-  border: 4px solid var(--toon-black);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: var(--border-thick) solid var(--toon-black);
   background: white;
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s ease;
   text-align: left;
   position: relative;
   overflow: hidden;
 }
 
 .room-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 4px 4px 0px var(--toon-black);
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateX(4px);
 }
 
 .room-item.active {
   background: var(--toon-sky);
-  color: var(--toon-black);
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-.room-item:hover .rename-btn {
-  opacity: 1;
-}
-
-.rename-btn {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  background: white;
-  border: 2px solid var(--toon-black);
-  border-radius: 6px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-}
-
-.rename-btn:hover {
-  background: var(--toon-yellow);
+  box-shadow: 4px 4px 0px var(--toon-black);
+  transform: translateX(4px);
 }
 
 .room-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   background: white;
   border: 2px solid var(--toon-black);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  color: #1A1A1A;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.chat-bubble-left,
+.chat-bubble-right {
+  max-width: 80%;
+  padding: 14px 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  border: var(--border-thick) solid var(--toon-black);
+  position: relative;
+  overflow-wrap: break-word;
+  /* Re-added for tests */
+  word-break: break-word;
+  /* Re-added for tests */
 }
 
 .chat-bubble-left {
-  border: 4px solid var(--toon-black);
   border-radius: 20px 20px 20px 4px;
-  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
   background-color: white;
-  position: relative;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.05);
 }
 
 .chat-bubble-right {
-  border: 4px solid var(--toon-black);
   border-radius: 20px 20px 4px 20px;
-  box-shadow: -4px 4px 0px rgba(0, 0, 0, 0.1);
   background-color: var(--toon-sky);
-  overflow-wrap: break-word;
-  word-break: break-word;
+  box-shadow: -6px 6px 0px rgba(0, 0, 0, 0.05);
 }
 
+/* Scrollbars */
 .scroll-custom::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .scroll-custom::-webkit-scrollbar-track {
@@ -140,7 +187,8 @@ h2 {
 
 .scroll-custom::-webkit-scrollbar-thumb {
   background: var(--toon-black);
-  border: 2px solid white;
+  border: 3px solid transparent;
+  background-clip: padding-box;
   border-radius: 10px;
 }
 
@@ -148,25 +196,19 @@ h2 {
   align-self: center;
   background: var(--toon-black);
   color: white;
-  padding: 6px 14px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 900;
   text-transform: uppercase;
-  margin: 10px 0;
-}
-
-.version-tag {
-  font-family: 'Fredoka One', cursive;
-  font-size: 0.8rem;
-  color: var(--toon-black);
-  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 16px 0;
 }
 
 @keyframes popIn {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(10px);
+    transform: scale(0.95) translateY(10px);
   }
 
   to {
@@ -181,56 +223,72 @@ h2 {
 
 .message-meta {
   display: block;
-  font-size: 0.65rem;
-  font-weight: 700;
-  margin-top: 4px;
-  opacity: 0.7;
+  font-size: 0.6rem;
+  font-weight: 900;
+  margin-top: 6px;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Mobile Sidebar logic */
+/* Mobile Adjustments */
 @media (max-width: 639px) {
-  #sidebar.open {
+  .sidebar-smooth {
+    position: fixed;
+    height: 100%;
+    transform: translateX(-100%);
+    pointer-events: none;
+    /* Prevent interception when closed */
+  }
+
+  .sidebar-smooth.open {
     transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .app-container {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .header-smooth {
+    padding: 0 16px;
+    z-index: 40;
+    /* Higher than sidebar (30) so toggle stays reachable */
   }
 }
 
-@media (max-width: 640px) {
-  body {
-    padding: 0 !important;
-  }
+/* Shared Utilities */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+}
 
-  #app {
-    max-width: none !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    display: flex;
-    flex-direction: row;
-  }
+.input-smooth {
+  border: var(--border-thick) solid var(--toon-black);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 700;
+  outline: none;
+  transition: box-shadow 0.2s ease;
+}
 
-  main {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+.input-smooth:focus {
+  box-shadow: 4px 4px 0px var(--toon-black);
+  outline: 2px solid var(--toon-sky);
+  /* Standard focus indicator for a11y */
+  outline-offset: 2px;
+}
 
-  #messages-container {
-    flex: 1;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    overflow-anchor: auto;
-  }
-
-  footer {
-    padding-bottom: env(safe-area-inset-bottom, 1rem);
-    background: var(--toon-yellow);
-    flex-shrink: 0;
-  }
-
-  .toon-border {
-    border: none !important;
-    box-shadow: none !important;
-  }
+/* Accessibility Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
