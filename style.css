@@ -197,7 +197,17 @@ h2 {
   .sidebar-smooth h1 {
     font-size: 1.1rem !important;
     -webkit-text-stroke-width: 0.5px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
+}
+
+#display-room-id {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .footer-smooth {

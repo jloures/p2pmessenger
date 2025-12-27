@@ -201,4 +201,20 @@ test.describe('Visual Regression Tests', () => {
         });
     });
 
+    test('Visual: Long Room Name Truncation', async ({ page }) => {
+        await page.setViewportSize({ width: 600, height: 800 });
+
+        // Mock a long room name in the DOM
+        await page.evaluate(() => {
+            const title = document.getElementById('display-room-id');
+            title.textContent = 'ROOM-SUPER-LONG-NAME-THAT-SHOULD-TRUNCATE-GRACEFULLY';
+            const shareBtn = document.getElementById('share-room-btn');
+            shareBtn.style.display = 'flex';
+            const leaveBtn = document.getElementById('leave-btn');
+            leaveBtn.style.display = 'block';
+        });
+
+        await expect(page.locator('.header-smooth')).toHaveScreenshot('header-long-name-truncation.png');
+    });
+
 });
