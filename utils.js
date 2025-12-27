@@ -2,6 +2,11 @@
  * p2pmessenger Utility Toolkit
  */
 
+export const MAX_ROOM_ID_LENGTH = 30;
+export const MAX_HANDLE_LENGTH = 20;
+export const MIN_HANDLE_LENGTH = 4;
+export const MIN_ROOM_ID_LENGTH = 3;
+
 export const escapeHtml = (text) => {
     if (!text) return '';
     const map = {
@@ -37,13 +42,13 @@ export const formatTime = (timestamp) => {
 export const validateHandle = (handle) => {
     if (!handle) return false;
     const trimmed = handle.trim();
-    return trimmed.length >= 2 && trimmed.length <= 20;
+    return trimmed.length >= MIN_HANDLE_LENGTH && trimmed.length <= MAX_HANDLE_LENGTH;
 };
 
 export const validateRoomId = (roomId) => {
     if (!roomId) return false;
     const trimmed = roomId.trim();
-    return trimmed.length >= 3 && trimmed.length <= 30;
+    return trimmed.length >= MIN_ROOM_ID_LENGTH && trimmed.length <= MAX_ROOM_ID_LENGTH;
 };
 
 export const parseHashParams = (hash) => {
@@ -78,5 +83,5 @@ export const isSystemMessage = (data) => {
 
 export const sanitizeRoomName = (name) => {
     if (!name) return '';
-    return name.toLowerCase().replace(/[^a-z0-9-]/g, '-').substring(0, 30);
+    return name.toLowerCase().replace(/[^a-z0-9-]/g, '-').substring(0, MAX_ROOM_ID_LENGTH);
 };

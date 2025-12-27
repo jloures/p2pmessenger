@@ -323,8 +323,10 @@ function renderRoomList() {
 }
 
 function addRoom(id, name, password = '') {
-  if (rooms.find(r => r.id === id)) return;
-  rooms.push({ id, name, password, icon: '💬' });
+  const sanitizedId = utils.sanitizeRoomName(id);
+  const sanitizedName = name.substring(0, utils.MAX_ROOM_ID_LENGTH);
+  if (rooms.find(r => r.id === sanitizedId)) return;
+  rooms.push({ id: sanitizedId, name: sanitizedName, password, icon: '💬' });
   saveRooms();
   renderRoomList();
 }

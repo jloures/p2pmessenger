@@ -217,7 +217,7 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageA.click('#identity-form button');
         }
         await pageA.click('#edit-profile-btn');
-        await pageA.fill('#identity-input', '<b id="evil">AliceHero</b>');
+        await pageA.fill('#identity-input', '<b id="evil">Alice</b>');
         await pageA.click('#identity-form button');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', 'sanitize-test');
@@ -239,7 +239,7 @@ test.describe('Security & Cryptographic Verification', () => {
         await pageB.click('#join-form button[type="submit"]');
 
         // Bob should see Alice's name (sanitized, so tags are visible as text)
-        await expect(pageB.locator('#messages-container')).toContainText('ALICEHERO', { timeout: 15000 });
+        await expect(pageB.locator('#messages-container')).toContainText('ALICE', { timeout: 15000 });
         await expect(pageB.locator('#messages-container')).toContainText('JOINED');
         const evilElement = await pageB.locator('#evil').count();
         expect(evilElement).toBe(0);
