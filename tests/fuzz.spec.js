@@ -24,7 +24,9 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
 
     test('Fuzz: Random Username Characters', async ({ page }) => {
         const fuzzName = getRandomString(50);
-        await page.fill('#username', fuzzName);
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', fuzzName);
+        await page.click('#identity-form button');
         await expect(page.locator('#app')).toBeVisible();
     });
 
@@ -46,7 +48,9 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
     });
 
     test('Fuzz: Mass Random Messaging', async ({ page }) => {
-        await page.fill('#username', 'SpeedyFuzzer');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'SpeedyFuzzer');
+        await page.click('#identity-form button');
 
         for (let i = 0; i < 10; i++) {
             const msg = getRandomString(Math.floor(Math.random() * 200));
@@ -59,7 +63,9 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
     });
 
     test('Fuzz: Huge Message Payload', async ({ page }) => {
-        await page.fill('#username', 'GigantoFuzzer');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'GigantoFuzzer');
+        await page.click('#identity-form button');
         const hugeMsg = 'A'.repeat(5000);
         await page.fill('#message-input', hugeMsg);
         await page.keyboard.press('Enter');

@@ -41,7 +41,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageA.fill('#identity-input', 'AliceHero');
             await pageA.click('#identity-form button');
         }
-        await pageA.fill('#username', 'AliceHero');
+        await pageA.click('#edit-profile-btn');
+        await pageA.fill('#identity-input', 'AliceHero');
+        await pageA.click('#identity-form button');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
         await pageA.fill('#room-password', 'key-alpha');
@@ -56,7 +58,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageB.fill('#identity-input', 'BobHero');
             await pageB.click('#identity-form button');
         }
-        await pageB.fill('#username', 'BobHero');
+        await pageB.click('#edit-profile-btn');
+        await pageB.fill('#identity-input', 'BobHero');
+        await pageB.click('#identity-form button');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', roomName);
         await pageB.fill('#room-password', 'key-beta');
@@ -76,7 +80,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageC.fill('#identity-input', 'CharlieHero');
             await pageC.click('#identity-form button');
         }
-        await pageC.fill('#username', 'CharlieHero');
+        await pageC.click('#edit-profile-btn');
+        await pageC.fill('#identity-input', 'CharlieHero');
+        await pageC.click('#identity-form button');
         await pageC.click('#show-join-modal');
         await pageC.fill('#room-id', roomName);
         await pageC.fill('#room-password', 'key-alpha');
@@ -107,7 +113,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageA.fill('#identity-input', 'AliceHero');
             await pageA.click('#identity-form button');
         }
-        await pageA.fill('#username', 'AliceHero');
+        await pageA.click('#edit-profile-btn');
+        await pageA.fill('#identity-input', 'AliceHero');
+        await pageA.click('#identity-form button');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
         await pageA.fill('#room-password', 'top-secret-1');
@@ -122,7 +130,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageE.fill('#identity-input', 'EveHero');
             await pageE.click('#identity-form button');
         }
-        await pageE.fill('#username', 'EveHero');
+        await pageE.click('#edit-profile-btn');
+        await pageE.fill('#identity-input', 'EveHero');
+        await pageE.click('#identity-form button');
         await pageE.click('#show-join-modal');
         await pageE.fill('#room-id', roomName);
         await pageE.fill('#room-password', 'wrong-key');
@@ -206,7 +216,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageA.fill('#identity-input', 'AliceHero');
             await pageA.click('#identity-form button');
         }
-        await pageA.fill('#username', '<b id="evil">AliceHero</b>');
+        await pageA.click('#edit-profile-btn');
+        await pageA.fill('#identity-input', '<b id="evil">AliceHero</b>');
+        await pageA.click('#identity-form button');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', 'sanitize-test');
         await pageA.click('#join-form button[type="submit"]');
@@ -219,7 +231,9 @@ test.describe('Security & Cryptographic Verification', () => {
             await pageB.fill('#identity-input', 'BobHero');
             await pageB.click('#identity-form button');
         }
-        await pageB.fill('#username', 'BobHero');
+        await pageB.click('#edit-profile-btn');
+        await pageB.fill('#identity-input', 'BobHero');
+        await pageB.click('#identity-form button');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', 'sanitize-test');
         await pageB.click('#join-form button[type="submit"]');
@@ -235,7 +249,12 @@ test.describe('Security & Cryptographic Verification', () => {
     test('Security 8: Should handle extremely large messages without UI freeze', async ({ page }) => {
         await page.setViewportSize({ width: 375, height: 667 });
         const largeMsg = 'A'.repeat(100000); // 100kb
-        await page.fill('#username', 'HeavyHitter');
+        if (await page.locator('#sidebar-toggle').isVisible()) {
+            await page.click('#sidebar-toggle');
+        }
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'HeavyHitter');
+        await page.click('#identity-form button');
         await page.fill('#message-input', largeMsg);
         await page.keyboard.press('Enter');
 
@@ -254,7 +273,7 @@ test.describe('Security & Cryptographic Verification', () => {
         const alertTriggered = await page.evaluate(() => window.XSS_DETECTED);
         expect(alertTriggered).toBeUndefined();
 
-        const profileDisplay = await page.locator('#username').inputValue();
+        const profileDisplay = await page.locator('#display-username').textContent();
         expect(profileDisplay.toLowerCase()).toContain('script');
     });
 

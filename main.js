@@ -63,7 +63,8 @@ const els = {
   sidebar: getEl('sidebar'),
   sidebarToggle: getEl('sidebar-toggle'),
   roomList: getEl('room-list'),
-  usernameInput: getEl('username'),
+  displayUsername: getEl('display-username'),
+  editProfileBtn: getEl('edit-profile-btn'),
   showJoinModal: getEl('show-join-modal'),
   joinModal: getEl('join-modal'),
   closeModal: getEl('close-modal'),
@@ -96,7 +97,7 @@ function init() {
     updatePersonalRoomName();
   }
 
-  els.usernameInput.value = myHandle;
+  if (els.displayUsername) els.displayUsername.textContent = (myHandle || 'HERO').toUpperCase();
   renderRoomList();
   switchRoom(activeRoomId);
   setupEventListeners();
@@ -109,8 +110,12 @@ function init() {
 function handleParams(params) {
   if (params.name) {
     myHandle = params.name;
-    els.usernameInput.value = myHandle;
+    if (els.displayUsername) els.displayUsername.textContent = myHandle.toUpperCase();
     localStorage.setItem('p2p_handle', myHandle);
+    if (myHandle.length >= 4) {
+      els.identityModal.classList.add('hidden');
+      updatePersonalRoomName();
+    }
   }
 
   if (params.room) {
@@ -151,13 +156,9 @@ function setupEventListeners() {
     }
   });
 
-  els.usernameInput.addEventListener('input', (e) => {
-    const val = e.target.value.trim();
-    if (val.length >= 4) {
-      myHandle = val;
-      updatePersonalRoomName();
-      localStorage.setItem('p2p_handle', myHandle);
-    }
+  els.editProfileBtn.addEventListener('click', () => {
+    els.identityInput.value = myHandle;
+    els.identityModal.classList.remove('hidden');
   });
 
   els.identityForm.addEventListener('submit', (e) => {
@@ -165,7 +166,7 @@ function setupEventListeners() {
     const val = els.identityInput.value.trim();
     if (val.length >= 4) {
       myHandle = val;
-      els.usernameInput.value = myHandle;
+      if (els.displayUsername) els.displayUsername.textContent = myHandle.toUpperCase();
       updatePersonalRoomName();
       localStorage.setItem('p2p_handle', myHandle);
       els.identityModal.classList.add('hidden');
@@ -233,7 +234,7 @@ function setupEventListeners() {
   window.addEventListener('storage', (e) => {
     if (e.key === 'p2p_handle') {
       myHandle = e.newValue || '';
-      els.usernameInput.value = myHandle;
+      if (els.displayUsername) els.displayUsername.textContent = (myHandle || '').toUpperCase();
       updatePersonalRoomName();
     }
     if (e.key === 'p2p_rooms') {
@@ -356,6 +357,7 @@ function updatePersonalRoomName() {
   const personalRoom = rooms.find(r => r.id === 'saved-messages');
   if (personalRoom) {
     personalRoom.name = myHandle || 'Personal';
+    if (els.displayUsername) els.displayUsername.textContent = (myHandle || 'HERO').toUpperCase();
     saveRooms();
     renderRoomList();
     if (activeRoomId === 'saved-messages') {

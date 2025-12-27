@@ -24,9 +24,11 @@ test.describe('P2P Messenger UI Tests', () => {
     // 2. Persistence: Username
     test('UI 2: Should persist username in localStorage', async ({ page }) => {
         const username = 'PersistenceHero';
-        await page.fill('#username', username);
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', username);
+        await page.click('#identity-form button');
         await page.reload();
-        await expect(page.locator('#username')).toHaveValue(username);
+        await expect(page.locator('#display-username')).toHaveText(username.toUpperCase());
     });
 
     // 3. Mobile Interactions
@@ -202,7 +204,7 @@ test.describe('P2P Messenger UI Tests', () => {
     // 17. Auto-join via URL Hash (Username)
     test('UI 17: Should set username from URL hash parameters', async ({ page }) => {
         await page.goto('/#name=HashHero');
-        await expect(page.locator('#username')).toHaveValue('HashHero');
+        await expect(page.locator('#display-username')).toHaveText('HASHHERO');
     });
 
     // 18. Auto-join via URL Hash (Room)
@@ -216,9 +218,10 @@ test.describe('P2P Messenger UI Tests', () => {
     // 19. Hero Name Profile Sync
     test('UI 19: Should update profile identity in sidebar when username changes', async ({ page }) => {
         const username = 'NewIdentity';
-        await page.fill('#username', username);
-        // We look for the profile section in sidebar
-        await expect(page.locator('#sidebar')).toContainText(username);
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', username);
+        await page.click('#identity-form button');
+        await expect(page.locator('#display-username')).toHaveText(username.toUpperCase());
     });
 
     // 20. Active Room Styling
@@ -351,9 +354,13 @@ test.describe('P2P Messenger UI Tests', () => {
 
     // 33. Sidebar Profile Default
     test('UI 33: Profile name should not update if input is too short (min 4)', async ({ page }) => {
-        await page.fill('#username', 'abc');
-        // The name in the sidebar should still be the initial one
-        await expect(page.locator('.room-item[data-room-id="saved-messages"]')).toContainText('TestHero');
+        await page.click('#edit-profile-btn');
+        const input = page.locator('#identity-input');
+        await input.fill('abc');
+        await page.click('#identity-form button');
+        // Modal should still be visible because it's required minlength=4
+        const modal = page.locator('#identity-modal');
+        await expect(modal).toBeVisible();
     });
 
     // 34. System Message Rendering
@@ -425,9 +432,11 @@ test.describe('P2P Messenger UI Tests', () => {
 
     // 41. Profile Name Casing
     test('UI 41: Profile name in sidebar should be uppercase in UI', async ({ page }) => {
-        await page.fill('#username', 'bobby');
-        // In the header it is uppercase, in the sidebar it is as entered
-        await expect(page.locator('#display-room-id')).toHaveText('BOBBY');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'bobby');
+        await page.click('#identity-form button');
+
+        await expect(page.locator('#display-username')).toHaveText('BOBBY');
         await expect(page.locator('.room-item.active')).toContainText('bobby');
     });
 

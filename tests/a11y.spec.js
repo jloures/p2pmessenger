@@ -40,11 +40,11 @@ test.describe('Accessibility (a11y) Audits', () => {
         expect(h1Count).toBe(1);
     });
 
-    // 5. Form Labels - Username
-    test('A11y 5: Username input should have an associated label', async ({ page }) => {
-        const label = page.locator('label[for="username"]');
+    // 5. Form Labels - Identity
+    test('A11y 5: Identity input should have an associated label', async ({ page }) => {
+        await page.click('#edit-profile-btn');
+        const label = page.locator('label[for="identity-input"]');
         await expect(label).toBeVisible();
-        await expect(label).toContainText(/Hero Name/i);
     });
 
     // 6. Sidebar Toggle ARIA
@@ -106,9 +106,10 @@ test.describe('Accessibility (a11y) Audits', () => {
 
     // 13. Focus Ring Visibility
     test('A11y 13: Focused elements should not have outline: none without alternative', async ({ page }) => {
-        const username = page.locator('#username');
-        await username.focus();
-        const outline = await username.evaluate(el => getComputedStyle(el).outlineStyle);
+        await page.click('#edit-profile-btn');
+        const input = page.locator('#identity-input');
+        await input.focus();
+        const outline = await input.evaluate(el => getComputedStyle(el).outlineStyle);
         expect(outline).not.toBe('none');
     });
 

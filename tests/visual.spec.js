@@ -60,7 +60,9 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: Chat Bubble Right (Own)', async ({ page }) => {
-        await page.fill('#username', 'VisualTester');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'VisualTester');
+        await page.click('#identity-form button');
         await page.fill('#message-input', 'This is a visual regression test for a chat bubble.');
         await page.keyboard.press('Enter');
         const bubble = page.locator('.chat-bubble-right').first();
@@ -100,7 +102,9 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: Profile Identity in Sidebar', async ({ page }) => {
-        await page.fill('#username', 'SUPER HERO');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'SUPER HERO');
+        await page.click('#identity-form button');
         await expect(page.locator('#sidebar header')).toHaveScreenshot('sidebar-profile-header.png');
     });
 
@@ -171,9 +175,10 @@ test.describe('Visual Regression Tests', () => {
         await expect(page.locator('#join-modal header')).toHaveScreenshot('modal-header.png');
     });
 
-    test('Visual: Username Input focused state', async ({ page }) => {
-        await page.focus('#username');
-        await expect(page.locator('#username')).toHaveScreenshot('username-input-focus.png');
+    test('Visual: Identity Input focused state', async ({ page }) => {
+        await page.click('#edit-profile-btn');
+        await page.focus('#identity-input');
+        await expect(page.locator('#identity-input')).toHaveScreenshot('identity-input-focus.png');
     });
 
     test('Visual: App Shell Borders and Shadows', async ({ page }) => {

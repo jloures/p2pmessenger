@@ -20,25 +20,26 @@
 
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar-smooth transform sm:translate-x-0 sm:relative">
-      <header class="p-6 border-b-4 border-[#1A1A1A] flex items-center gap-4">
-        <div class="relative">
+      <header class="p-6 flex items-start gap-4 relative">
+        <div class="relative flex-shrink-0">
           <img src="./favicon.png" alt="p2pmessenger"
             class="w-12 h-12 rounded-2xl border-4 border-[#1A1A1A] bg-white shadow-[4px_4px_0px_#1A1A1A]" />
           <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#6BCB77] border-2 border-[#1A1A1A] rounded-full"></div>
         </div>
-        <div class="flex flex-col">
+        <div class="flex flex-col flex-1 min-w-0 pr-8">
           <h1 class="text-xl text-white tracking-widest leading-tight">P2PMSG</h1>
-          <div class="flex items-center gap-1">
+          <div class="flex flex-col gap-0.5">
             <span id="app-version"
-              class="text-[9px] font-black text-[#1A1A1A] uppercase bg-white/30 px-1.5 rounded-md">v1.3.1</span>
+              class="text-[9px] font-black text-[#1A1A1A] uppercase bg-white/30 px-1.5 rounded-md w-fit">v1.3.1</span>
+            <span id="display-username"
+              class="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest truncate">HERO</span>
           </div>
         </div>
+        <button id="edit-profile-btn" aria-label="Edit Profile"
+          class="absolute top-6 right-6 w-8 h-8 bg-white border-2 border-[#1A1A1A] rounded-xl flex items-center justify-center toon-button shadow-[2px_2px_0px_#1A1A1A] text-sm">
+          👤
+        </button>
       </header>
-
-      <div class="p-6 border-b-4 border-[#1A1A1A] bg-black/5">
-        <label for="username" class="text-[10px] font-black uppercase text-[#1A1A1A] mb-1.5 block">My Hero Name</label>
-        <input type="text" id="username" placeholder="Who are you?" class="w-full input-smooth text-sm bg-white" />
-      </div>
 
       <div class="flex-1 overflow-y-auto p-6 space-y-4 scroll-custom">
         <div class="flex items-center justify-between mb-2">
@@ -52,7 +53,7 @@
         </ul>
       </div>
 
-      <footer class="p-6 border-t-4 border-[#1A1A1A] bg-black/5">
+      <footer class="p-6 bg-black/5">
         <div class="flex items-center gap-2">
           <span class="text-[10px] font-black text-[#1A1A1A] uppercase tracking-widest">Security First P2P</span>
         </div>

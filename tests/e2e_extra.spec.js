@@ -24,7 +24,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
     test('E2E: Copy button provides visual feedback', async ({ page, context }) => {
         await context.grantPermissions(['clipboard-write']);
-        await page.fill('#username', 'FeedbackHero');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'FeedbackHero');
+        await page.click('#identity-form button');
         await page.click('#show-join-modal');
         await page.fill('#room-id', 'feedback-room');
         await page.click('#join-form button[type="submit"]');
@@ -41,7 +43,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     });
 
     test('E2E: Messages handle multiline and long text', async ({ page }) => {
-        await page.fill('#username', 'LongHero');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'LongHero');
+        await page.click('#identity-form button');
 
         const longText = 'A'.repeat(500);
         await page.fill('#message-input', longText);
@@ -51,7 +55,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     });
 
     test('E2E: Special characters and emojis are rendered correctly', async ({ page }) => {
-        await page.fill('#username', 'EmojiHero');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'EmojiHero');
+        await page.click('#identity-form button');
 
         const specialText = '🖍️ Pop! 💥 "Quouted" & <Escaped>';
         await page.fill('#message-input', specialText);
@@ -61,7 +67,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     });
 
     test('E2E: Rapid messaging should not break the UI', async ({ page }) => {
-        await page.fill('#username', 'SpeedHero');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'SpeedHero');
+        await page.click('#identity-form button');
 
         const input = page.locator('#message-input');
         for (let i = 1; i <= 10; i++) {
@@ -74,7 +82,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
     });
 
     test('E2E: Auto-scroll to bottom on new message', async ({ page }) => {
-        await page.fill('#username', 'ScrollHero');
+        await page.click('#edit-profile-btn');
+        await page.fill('#identity-input', 'ScrollHero');
+        await page.click('#identity-form button');
 
         // Flood with messages
         for (let i = 0; i < 20; i++) {
@@ -99,7 +109,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
             await alicePage.fill('#identity-input', 'AliceHero');
             await alicePage.click('#identity-form button');
         }
-        await alicePage.fill('#username', 'AliceHero');
+        await alicePage.click('#edit-profile-btn');
+        await alicePage.fill('#identity-input', 'AliceHero');
+        await alicePage.click('#identity-form button');
         await alicePage.click('#show-join-modal');
         await alicePage.fill('#room-id', 'room-alpha');
         await alicePage.click('#join-form button[type="submit"]');
@@ -110,7 +122,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
             await bobPage.fill('#identity-input', 'BobHero');
             await bobPage.click('#identity-form button');
         }
-        await bobPage.fill('#username', 'BobHero');
+        await bobPage.click('#edit-profile-btn');
+        await bobPage.fill('#identity-input', 'BobHero');
+        await bobPage.click('#identity-form button');
         await bobPage.click('#show-join-modal');
         await bobPage.fill('#room-id', 'room-beta');
         await bobPage.click('#join-form button[type="submit"]');
@@ -131,7 +145,7 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
         await page.goto('/#room=persistent-room&name=PersistentHero');
 
         await expect(page.locator('#display-room-id')).toContainText('PERSISTENT-ROOM');
-        await expect(page.locator('#username')).toHaveValue('PersistentHero');
+        await expect(page.locator('#display-username')).toHaveText('PERSISTENTHERO');
 
         await page.reload();
         // Since it's in localStorage now, it should persist switching back to it
@@ -149,7 +163,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
             await pageA.fill('#identity-input', 'UserAHero');
             await pageA.click('#identity-form button');
         }
-        await pageA.fill('#username', 'UserAHero');
+        await pageA.click('#edit-profile-btn');
+        await pageA.fill('#identity-input', 'UserAHero');
+        await pageA.click('#identity-form button');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', room);
         await pageA.click('#join-form button[type="submit"]');
@@ -164,7 +180,9 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
             await pageB.fill('#identity-input', 'UserBHero');
             await pageB.click('#identity-form button');
         }
-        await pageB.fill('#username', 'UserBHero');
+        await pageB.click('#edit-profile-btn');
+        await pageB.fill('#identity-input', 'UserBHero');
+        await pageB.click('#identity-form button');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', room);
         await pageB.click('#join-form button[type="submit"]');

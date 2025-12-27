@@ -16,7 +16,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await alicePage.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         const roomName = `e2e-room-${Math.random().toString(36).substring(7)}`;
-        await alicePage.fill('#username', 'Alice');
+        await alicePage.click('#edit-profile-btn');
+        await alicePage.fill('#identity-input', 'Alice');
+        await alicePage.click('#identity-form button');
         await alicePage.click('#show-join-modal');
         await alicePage.fill('#room-id', roomName);
         await alicePage.click('#join-form button[type="submit"]');
@@ -38,7 +40,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await bobPage.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         await expect(bobPage.locator('#display-room-id')).toHaveText(roomName.toUpperCase());
-        await bobPage.fill('#username', 'BobTheHero');
+        await bobPage.click('#edit-profile-btn');
+        await bobPage.fill('#identity-input', 'BobTheHero');
+        await bobPage.click('#identity-form button');
 
         // 4. Verification of Connection
         await expect(alicePage.locator('#peer-count')).toContainText('2 HEROES ONLINE', { timeout: 45000 });
@@ -81,7 +85,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
             await pageA.click('#identity-form button');
         }
         await pageA.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
-        await pageA.fill('#username', 'AliceHero');
+        await pageA.click('#edit-profile-btn');
+        await pageA.fill('#identity-input', 'AliceHero');
+        await pageA.click('#identity-form button');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
         await pageA.fill('#room-password', 'password-A');
@@ -97,7 +103,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
             await pageB.click('#identity-form button');
         }
         await pageB.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
-        await pageB.fill('#username', 'BobHero');
+        await pageB.click('#edit-profile-btn');
+        await pageB.fill('#identity-input', 'BobHero');
+        await pageB.click('#identity-form button');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', roomName);
         await pageB.fill('#room-password', 'password-B');

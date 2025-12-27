@@ -20,10 +20,12 @@ test.describe('P2P Messenger Multi-Tab Synchronization', () => {
         const page2 = await setupSyncPage(context, 'Hero2');
 
         // Change name in Tab 1
-        await page1.fill('#username', 'SynchronizedHero');
+        await page1.click('#edit-profile-btn');
+        await page1.fill('#identity-input', 'SynchronizedHero');
+        await page1.click('#identity-form button');
 
         // Wait for storage event / sync
-        await expect(page2.locator('.room-item[data-room-id="saved-messages"]')).toContainText('SynchronizedHero', { timeout: 10000 });
+        await expect(page2.locator('#display-username')).toHaveText('SYNCHRONIZEDHERO', { timeout: 10000 });
 
         await context.close();
     });
