@@ -158,6 +158,7 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
     test('E2E: Peer Count is visible and reactive', async ({ browser }) => {
         const contextA = await browser.newContext();
+        await contextA.grantPermissions(['clipboard-write', 'clipboard-read']);
         const pageA = await contextA.newPage();
         const room = 'count-room';
 
@@ -176,21 +177,22 @@ test.describe('p2pmessenger Extra E2E Scenarios', () => {
 
         await expect(pageA.locator('#peer-count')).toContainText('1 HERO ONLINE', { timeout: 30000 });
 
+        // Get Share Link
+        await pageA.click('#share-room-btn');
+        await pageA.click('#copy-invite-btn');
+        const shareLink = await pageA.evaluate(() => navigator.clipboard.readText());
+
         const contextB = await browser.newContext();
         const pageB = await contextB.newPage();
-        await pageB.goto('/');
+        await pageB.goto(shareLink);
+
         const bModal = pageB.locator('#identity-modal');
         if (await bModal.isVisible()) {
             await pageB.fill('#identity-input', 'UserBHero');
             await pageB.click('#identity-form button');
         }
-        await pageB.click('#edit-profile-btn');
-        await pageB.fill('#identity-input', 'UserBHero');
-        await pageB.click('#identity-form button');
-        await pageB.click('#show-join-modal');
-        await pageB.fill('#room-id', room);
-        await pageB.click('#join-form button[type="submit"]');
 
+        // Bob is now in. Wait for connection.
         await expect(pageA.locator('#peer-count')).toContainText('2 HEROES ONLINE', { timeout: 30000 });
 
         await contextA.close();

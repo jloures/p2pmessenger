@@ -419,4 +419,21 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(page.locator('#messages-container')).not.toContainText('Personal Note');
     });
 
+    // 43. Duplicate Constraint
+    test('UI 43: Should prevent creating duplicate rooms (Same User)', async ({ page }) => {
+        const room = 'dupe-room';
+        await page.click('#show-join-modal');
+        await page.fill('#room-id', room);
+        await page.click('#join-form button[type="submit"]');
+
+        // Try adding it again
+        await page.click('#show-join-modal');
+        await page.fill('#room-id', room);
+        await page.click('#join-form button[type="submit"]');
+
+        // Should only be one instance
+        const cnt = await page.locator(`.room-item[data-room-id="${room}"]`).count();
+        expect(cnt).toBe(1);
+    });
+
 });

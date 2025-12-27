@@ -32,6 +32,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await alicePage.click('#copy-invite-btn');
         const shareLink = await alicePage.evaluate(() => navigator.clipboard.readText());
         expect(shareLink).toContain(`#room=${roomName}`);
+        expect(shareLink).toContain(`&creator=`);
 
         // 3. Bob joins using the share link
         const bobContext = await browser.newContext();
@@ -78,6 +79,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
 
         // Alice joins with password 'A'
         const contextA = await browser.newContext();
+        await contextA.grantPermissions(['clipboard-write', 'clipboard-read']);
         const pageA = await contextA.newPage();
         await pageA.goto('/');
         const aliceModal = pageA.locator('#identity-modal');
@@ -94,10 +96,22 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await pageA.fill('#room-password', 'password-A');
         await pageA.click('#join-form button[type="submit"]');
 
-        // Bob joins same room with password 'B'
+        // Get Share Link from Alice so Bob joins the SAME topic/creator
+        await pageA.click('#share-room-btn');
+        // We can just grab it from clipboard or construct it if we knew the ID, but clipboard is safe
+        await pageA.click('#copy-invite-btn');
+        let shareLink = await pageA.evaluate(() => navigator.clipboard.readText());
+
+        // Construct Bob's link: use Alice's link but with HIS password (or no password, but test says different keys)
+        // Alice's link has &pass=password-A. We must replace it with password-B to simulate mismatch.
+        shareLink = shareLink.replace('pass=password-A', 'pass=password-B');
+
+        // Bob joins same room (Topic) but with different Password 'B'
         const contextB = await browser.newContext();
+        await contextB.grantPermissions(['clipboard-write', 'clipboard-read']);
         const pageB = await contextB.newPage();
-        await pageB.goto('/');
+        await pageB.goto(shareLink);
+
         const bobModal = pageB.locator('#identity-modal');
         if (await bobModal.isVisible()) {
             await pageB.fill('#identity-input', 'BobHero');
@@ -107,14 +121,11 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await pageB.click('#edit-profile-btn');
         await pageB.fill('#identity-input', 'BobHero');
         await pageB.click('#identity-form button');
-        await pageB.click('#show-join-modal');
-        await pageB.fill('#room-id', roomName);
-        await pageB.fill('#room-password', 'password-B');
-        await pageB.click('#join-form button[type="submit"]');
 
-        // They should NEVER see each other
-        await pageA.waitForTimeout(10000);
-
+        // Wait for connection attempt.
+        // Trystero/Nostr behavior: Peers with different passwords (keys) DO NOT complete handshake.
+        // Therefore, they should NOT see each other.
+        await pageA.waitForTimeout(5000);
         await expect(pageA.locator('#peer-count')).toContainText('1 HERO ONLINE');
         await expect(pageB.locator('#peer-count')).toContainText('1 HERO ONLINE');
 

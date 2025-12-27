@@ -12,7 +12,7 @@ export class P2PMessenger {
         this.myHandle = '';
     }
 
-    join(roomName, handle, password = null) {
+    join(roomName, handle, password = null, topic = null) {
         this.myHandle = handle;
         const config = {
             appId: this.appId,
@@ -35,7 +35,7 @@ export class P2PMessenger {
         };
         if (password) config.password = password;
 
-        this.room = joinRoom(config, roomName);
+        this.room = joinRoom(config, topic || roomName);
 
         const [sendMsg, getMsg] = this.room.makeAction('chat');
         this.sendAction = sendMsg;
