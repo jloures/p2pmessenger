@@ -23,7 +23,7 @@ test.describe('P2P Messenger Multi-Tab Synchronization', () => {
         await page1.fill('#username', 'SynchronizedHero');
 
         // Wait for storage event / sync
-        await expect(page2.locator('#profile-name')).toHaveText('SynchronizedHero', { timeout: 10000 });
+        await expect(page2.locator('.room-item[data-room-id="saved-messages"]')).toContainText('SynchronizedHero', { timeout: 10000 });
 
         await context.close();
     });

@@ -97,7 +97,6 @@ function init() {
   }
 
   els.usernameInput.value = myHandle;
-  updateProfileDisplay();
   renderRoomList();
   switchRoom(activeRoomId);
   setupEventListeners();
@@ -111,7 +110,6 @@ function handleParams(params) {
   if (params.name) {
     myHandle = params.name;
     els.usernameInput.value = myHandle;
-    updateProfileDisplay();
     localStorage.setItem('p2p_handle', myHandle);
   }
 

@@ -22,7 +22,7 @@ test.describe('Visual Regression Tests', () => {
     const maskLocators = [
         page => page.locator('.message-meta'),
         page => page.locator('#display-room-id'),
-        page => page.locator('#profile-name'),
+        page => page.locator('#app-version'),
         page => page.locator('#peer-count'),
         page => page.locator('.room-item div:last-child') // Technical IDs in sidebar
     ];
@@ -31,7 +31,7 @@ test.describe('Visual Regression Tests', () => {
         await page.setViewportSize({ width: 1280, height: 800 });
         await page.waitForTimeout(500);
         await expect(page).toHaveScreenshot('desktop-default.png', {
-            mask: [page.locator('.message-meta'), page.locator('#profile-name'), page.locator('#peer-count')],
+            mask: [page.locator('.message-meta'), page.locator('#app-version'), page.locator('#peer-count')],
             maxDiffPixelRatio: 0.1
         });
     });
@@ -40,7 +40,7 @@ test.describe('Visual Regression Tests', () => {
         await page.setViewportSize({ width: 375, height: 667 });
         await page.waitForTimeout(500);
         await expect(page).toHaveScreenshot('mobile-sidebar-closed.png', {
-            mask: [page.locator('.message-meta'), page.locator('#profile-name'), page.locator('#peer-count')],
+            mask: [page.locator('.message-meta'), page.locator('#app-version'), page.locator('#peer-count')],
             maxDiffPixelRatio: 0.1
         });
     });
@@ -49,7 +49,7 @@ test.describe('Visual Regression Tests', () => {
         await page.setViewportSize({ width: 375, height: 667 });
         await page.click('#sidebar-toggle');
         await expect(page.locator('#sidebar')).toHaveScreenshot('mobile-sidebar-open.png', {
-            mask: [page.locator('#profile-name')]
+            mask: [page.locator('#app-version')]
         });
     });
 
@@ -105,7 +105,7 @@ test.describe('Visual Regression Tests', () => {
     });
 
     test('Visual: Sidebar Footer Version', async ({ page }) => {
-        await expect(page.locator('.version-tag')).toHaveScreenshot('app-version-tag.png');
+        await expect(page.locator('#app-version')).toHaveScreenshot('app-version-tag.png');
     });
 
     test('Visual: Room List with Multiple Items', async ({ page }) => {

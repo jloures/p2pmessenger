@@ -78,7 +78,7 @@ test.describe('Network Resilience & Latency Simulation', () => {
         await page.click('#join-form button[type="submit"]');
 
         await context.setOffline(true);
-        await expect(page.locator('#profile-name')).toBeVisible();
+        await expect(page.locator('#app-version')).toBeVisible();
         await expect(page.locator('#display-room-id')).toContainText('OFFLINE-ID-TEST');
     });
 
@@ -93,7 +93,7 @@ test.describe('Network Resilience & Latency Simulation', () => {
     });
 
     test('Network 8: Messaging locally still works even if Net is flaky', async ({ context, page }) => {
-        await page.click('text=Saved-Messages');
+        await page.click('[data-room-id="saved-messages"]');
         await context.setOffline(true);
 
         await page.fill('#message-input', 'Offline note');

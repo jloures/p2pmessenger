@@ -17,6 +17,7 @@ test.describe('P2P Messenger UI Tests', () => {
     test('UI 1: Should display sidebar and User identity on load', async ({ page }) => {
         await expect(page.locator('#sidebar')).toBeVisible();
         await expect(page.locator('#display-room-id')).toContainText('TESTHERO');
+        // The identity is now shown in the Personal Channel name
         await expect(page.locator('.room-item.active')).toContainText('TestHero');
     });
 
@@ -351,8 +352,8 @@ test.describe('P2P Messenger UI Tests', () => {
     // 33. Sidebar Profile Default
     test('UI 33: Profile name should not update if input is too short (min 4)', async ({ page }) => {
         await page.fill('#username', 'abc');
-        const profile = page.locator('#profile-name');
-        await expect(profile).toHaveText('TestHero');
+        // The name in the sidebar should still be the initial one
+        await expect(page.locator('.room-item[data-room-id="saved-messages"]')).toContainText('TestHero');
     });
 
     // 34. System Message Rendering
@@ -425,9 +426,9 @@ test.describe('P2P Messenger UI Tests', () => {
     // 41. Profile Name Casing
     test('UI 41: Profile name in sidebar should be uppercase in UI', async ({ page }) => {
         await page.fill('#username', 'bobby');
-        const profile = page.locator('#profile-name');
-        await expect(profile).toHaveText(/bobby/i);
-        await expect(profile).toHaveCSS('text-transform', 'uppercase');
+        // In the header it is uppercase, in the sidebar it is as entered
+        await expect(page.locator('#display-room-id')).toHaveText('BOBBY');
+        await expect(page.locator('.room-item.active')).toContainText('bobby');
     });
 
     // 42. Multi-room message separation

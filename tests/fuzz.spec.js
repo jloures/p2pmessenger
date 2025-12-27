@@ -143,7 +143,7 @@ test.describe('p2pmessenger Fuzz Testing (UI Resilience & Input Handling)', () =
         await page.fill('#room-id', 'nav-room-1');
         await page.click('#join-form button[type="submit"]');
 
-        await page.click('text=Saved-Messages');
+        await page.click('[data-room-id="saved-messages"]');
 
         for (let i = 0; i < 5; i++) {
             await page.goBack();

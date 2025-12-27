@@ -254,7 +254,7 @@ test.describe('Security & Cryptographic Verification', () => {
         const alertTriggered = await page.evaluate(() => window.XSS_DETECTED);
         expect(alertTriggered).toBeUndefined();
 
-        const profileDisplay = await page.locator('#profile-name').textContent();
+        const profileDisplay = await page.locator('#username').inputValue();
         expect(profileDisplay.toLowerCase()).toContain('script');
     });
 

@@ -54,7 +54,7 @@ test.describe('P2P Messenger Robustness & Error Handling', () => {
 
         // Should fallback gracefully
         await expect(page.locator('#display-room-id')).toBeVisible();
-        const profile = await page.locator('#profile-name').textContent();
+        const profile = await page.locator('#username').inputValue();
         expect(profile).toBeTruthy();
     });
 
