@@ -232,6 +232,62 @@ function setupEventListeners() {
   });
 
   window.addEventListener('hashchange', refreshFromHash);
+
+  // Sync across tabs
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'p2p_handle') {
+      myHandle = e.newValue || '';
+      els.usernameInput.value = myHandle;
+      updateProfileDisplay();
+      updatePersonalRoomName();
+    }
+    if (e.key === 'p2p_rooms') {
+      const oldActiveRoomId = activeRoomId;
+      try {
+        rooms = JSON.parse(e.newValue) || [];
+      } catch (err) {
+        rooms = [];
+      }
+      renderRoomList();
+
+      // If our active room was deleted in another tab, kick us back to personal
+      const stillExists = rooms.some(r => r.id === activeRoomId);
+      if (!stillExists && activeRoomId !== 'saved-messages') {
+        switchRoom('saved-messages');
+      } else if (activeRoomId === oldActiveRoomId) {
+        // Refresh header in case of rename
+        const room = rooms.find(r => r.id === activeRoomId);
+        if (room) {
+          els.displayRoomId.textContent = (room.name || room.id).toUpperCase();
+        }
+      }
+    }
+    if (e.key === 'p2p_messages') {
+      try {
+        roomMessages = JSON.parse(e.newValue) || {};
+      } catch (err) {
+        roomMessages = {};
+      }
+      // If we are in a room, refresh the view to show new messages from other tab
+      // Note: This won't double messages because saveAndAppendMessage already handles the active view
+      // But it's good for history consistency
+      if (activeRoomId) {
+        const container = els.messagesContainer;
+        const scrollPos = container.scrollTop;
+        const atBottom = Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 50;
+
+        container.innerHTML = '';
+        const history = roomMessages[activeRoomId] || [];
+        history.forEach(msg => appendMessageUI(msg, msg.isOwn));
+
+        if (atBottom) {
+          container.scrollTop = container.scrollHeight;
+        } else {
+          container.scrollTop = scrollPos;
+        }
+      }
+    }
+  });
 }
 
 function updateProfileDisplay() {
@@ -239,6 +295,7 @@ function updateProfileDisplay() {
 }
 
 // 6. ROOM MANAGEMENT
+window.addRoom = addRoom;
 function renderRoomList() {
   els.roomList.innerHTML = '';
   rooms.forEach(room => {
@@ -432,6 +489,12 @@ function saveAndAppendMessage(roomId, data, isOwn) {
 
   if (activeRoomId === roomId) {
     appendMessageUI(data, isOwn);
+
+    // Performance: Trim DOM if it exceeds buffer
+    const allMessages = els.messagesContainer.querySelectorAll('.chat-bubble-anim, .system-message');
+    if (allMessages.length > 50) {
+      allMessages[0].remove();
+    }
   }
 }
 
