@@ -55,13 +55,9 @@ h2 {
   z-index: 50;
   transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
-.sidebar-smooth.collapsed {
-  width: 0;
-  transform: translateX(-100%);
-  border-right-width: 0;
-}
 
 .main-smooth {
   flex: 1;
@@ -72,41 +68,92 @@ h2 {
   transition: margin-left 0.3s ease-in-out;
 }
 
-@media (max-width: 639px) {
-  #sidebar-toggle {
-    position: fixed;
-    top: 24px;
-    /* Aligned with header p-6 */
-    left: 24px;
-    z-index: 100;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    background-color: white;
-    border: var(--border-thick) solid var(--toon-black);
-    border-radius: 12px;
-    box-shadow: 4px 4px 0px var(--toon-black);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
+/* Global Toggle Styles */
+#sidebar-toggle {
+  position: fixed;
+  top: 24px;
+  /* Aligned with header p-6 */
+  left: 24px;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background-color: white;
+  border: var(--border-thick) solid var(--toon-black);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0px var(--toon-black);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+#sidebar-toggle:hover {
+  transform: scale(1.05);
+}
+
+#sidebar-toggle:active {
+  transform: scale(0.95);
+  box-shadow: 2px 2px 0px var(--toon-black);
+}
+
+/* Animated Burger Menu */
+.burger-span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background-color: var(--toon-black);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop Specific Toggle Behavior */
+@media (min-width: 640px) {
+
+  /* When NOT collapsed (Open), toggle acts as Close button inside sidebar */
+  .sidebar-smooth:not(.collapsed)~#sidebar-toggle {
+    left: calc(var(--sidebar-width) - 72px);
+    background-color: var(--toon-red);
   }
 
-  /* Animated Burger Menu */
-  .burger-span {
-    display: block;
-    width: 24px;
-    height: 3px;
-    background-color: var(--toon-black);
-    border-radius: 2px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  .sidebar-smooth:not(.collapsed)~#sidebar-toggle .burger-span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+    background-color: white;
   }
+
+  .sidebar-smooth:not(.collapsed)~#sidebar-toggle .burger-span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .sidebar-smooth:not(.collapsed)~#sidebar-toggle .burger-span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+    background-color: white;
+  }
+
+  /* When Collapsed, toggle acts as Open button on the left */
+  .sidebar-smooth.collapsed~#sidebar-toggle {
+    left: 24px;
+    background-color: white;
+  }
+
+  .sidebar-smooth.collapsed~#sidebar-toggle .burger-span {
+    background-color: var(--toon-black);
+  }
+
+  .sidebar-smooth.collapsed {
+    width: 0;
+    border-right-width: 0;
+  }
+}
+
+
+@media (max-width: 639px) {
+  /* Mobile specific overrides if any needed, otherwise base styles apply */
 
   .sidebar-smooth.open~#sidebar-toggle {
     left: calc(var(--sidebar-width) - 72px);
-    /* 320 - 24 - 48 = 248 */
     background-color: var(--toon-red);
   }
 
@@ -126,13 +173,13 @@ h2 {
 }
 
 .header-smooth {
-  height: 72px;
+  height: 84px;
   display: flex;
   align-items: center;
   padding: 0 24px 0 84px;
-  /* Space for fixed toggle */
   background-color: var(--toon-yellow);
   border-bottom: var(--border-thick) solid var(--toon-black);
+  transition: padding-left 0.3s ease-in-out;
 }
 
 @media (max-width: 639px) {

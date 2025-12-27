@@ -32,6 +32,7 @@ test.describe('P2P Messenger UI Tests', () => {
     });
 
     // 3. Mobile Interactions
+    // 3. Mobile Interactions
     test('UI 3: Should toggle sidebar visibility on mobile viewport', async ({ page }) => {
         await page.setViewportSize({ width: 375, height: 667 });
         const sidebar = page.locator('#sidebar');
@@ -42,6 +43,27 @@ test.describe('P2P Messenger UI Tests', () => {
         await expect(sidebar).toHaveClass(/open/);
         await toggle.click();
         await expect(sidebar).not.toHaveClass(/open/);
+    });
+
+    // 3.1. Desktop Sidebar Toggle
+    test('UI 3.1: Should collapse and expand sidebar on desktop viewport', async ({ page }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        const sidebar = page.locator('#sidebar');
+        const toggle = page.locator('#sidebar-toggle');
+
+        // Initial state: visible, not collapsed
+        await expect(sidebar).toBeVisible();
+        await expect(sidebar).not.toHaveClass(/collapsed/);
+
+        // Click to collapse
+        await toggle.click();
+        await expect(sidebar).toHaveClass(/collapsed/);
+
+        // Content should still be visible (main area expands) but we just check sidebar state here
+
+        // Click to expand
+        await toggle.click();
+        await expect(sidebar).not.toHaveClass(/collapsed/);
     });
 
     // 4. Modal Visibility

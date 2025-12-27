@@ -31,7 +31,17 @@ test.describe('Visual Regression Tests', () => {
         await page.setViewportSize({ width: 1280, height: 800 });
         await page.waitForTimeout(500);
         await expect(page).toHaveScreenshot('desktop-default.png', {
-            mask: [page.locator('.message-meta'), page.locator('#app-version'), page.locator('#peer-count')],
+            mask: [page.locator('.message-meta'), page.locator('#app-version'), page.locator('#peer-count'), page.locator('#sidebar-toggle')],
+            maxDiffPixelRatio: 0.1
+        });
+    });
+
+    test('Visual: Desktop Sidebar Collapsed', async ({ page }) => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.click('#sidebar-toggle');
+        await page.waitForTimeout(500); // Wait for transition
+        await expect(page).toHaveScreenshot('desktop-sidebar-collapsed.png', {
+            mask: [page.locator('.message-meta'), page.locator('#sidebar-toggle')],
             maxDiffPixelRatio: 0.1
         });
     });
@@ -49,6 +59,25 @@ test.describe('Visual Regression Tests', () => {
         await page.setViewportSize({ width: 375, height: 667 });
         await page.click('#sidebar-toggle');
         await expect(page.locator('#sidebar')).toHaveScreenshot('mobile-sidebar-open.png', {
+            mask: [page.locator('#app-version')]
+        });
+    });
+
+    test('Visual: Mobile Sidebar Resize Regression', async ({ page }) => {
+        // Start on desktop, collapse sidebar
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.click('#sidebar-toggle'); // Collapse
+        await page.waitForTimeout(500);
+
+        // Resize to mobile
+        await page.setViewportSize({ width: 375, height: 667 });
+
+        // Sidebar should initially be hidden (translated left), NOT width 0
+        // Open it
+        await page.click('#sidebar-toggle');
+        await page.waitForTimeout(500);
+
+        await expect(page.locator('#sidebar')).toHaveScreenshot('mobile-sidebar-resize-fix.png', {
             mask: [page.locator('#app-version')]
         });
     });
