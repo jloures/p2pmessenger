@@ -10,10 +10,15 @@
         "test": "playwright test",
         "test:ui": "playwright test tests/ui.spec.js",
         "test:core": "playwright test tests/functional.spec.js",
+        "test:unit": "playwright test tests/unit.spec.js",
+        "test:fuzz": "playwright test tests/fuzz.spec.js",
+        "test:visual": "playwright test tests/visual.spec.js",
+        "test:a11y": "playwright test tests/a11y.spec.js",
         "test:e2e": "playwright test tests/e2e.spec.js",
         "test:report": "playwright show-report"
     },
     "devDependencies": {
+        "@axe-core/playwright": "^4.11.0",
         "@playwright/test": "^1.57.0",
         "@types/node": "^25.0.3",
         "vite": "^7.3.0"

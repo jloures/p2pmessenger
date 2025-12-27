@@ -11,11 +11,23 @@ const APP_ID = 'p2pmsg-v2';
 window.P2PMessenger = P2PMessenger;
 let messenger = null; // Will be initialized per room
 let myHandle = localStorage.getItem('p2p_handle') || '';
-let rooms = JSON.parse(localStorage.getItem('p2p_rooms')) || [
-  { id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true }
-];
+let rooms = [];
+try {
+  rooms = JSON.parse(localStorage.getItem('p2p_rooms')) || [
+    { id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true }
+  ];
+} catch (e) {
+  rooms = [
+    { id: 'saved-messages', name: 'Saved-Messages', icon: '⭐', isPrivate: true }
+  ];
+}
 let activeRoomId = 'saved-messages';
-let roomMessages = JSON.parse(localStorage.getItem('p2p_messages')) || {}; // { roomId: [msgs] }
+let roomMessages = {};
+try {
+  roomMessages = JSON.parse(localStorage.getItem('p2p_messages')) || {};
+} catch (e) {
+  roomMessages = {};
+}
 
 // Expose for testing/debugging
 window.utils = utils;
@@ -42,20 +54,39 @@ const els = {
   messageInput: getEl('message-input'),
   leaveBtn: getEl('leave-btn'),
   copyBtn: getEl('copy-room-btn'),
+  profileName: getEl('profile-name'),
 };
 
 // 4. INIT
 function init() {
   els.usernameInput.value = myHandle;
+  updateProfileDisplay();
   renderRoomList();
   switchRoom(activeRoomId);
   setupEventListeners();
 
-  // Handle URL Hash if present for auto-join
+  // Handle URL Hash if present
   const params = utils.parseHashParams(window.location.hash);
-  if (params.room) {
-    autoJoinFromParams(params);
+  handleParams(params);
+}
+
+function handleParams(params) {
+  if (params.name) {
+    myHandle = params.name;
+    els.usernameInput.value = myHandle;
+    updateProfileDisplay();
+    localStorage.setItem('p2p_handle', myHandle);
   }
+
+  if (params.room) {
+    addRoom(params.room, params.room, params.pass || '');
+    switchRoom(params.room);
+  }
+}
+
+function refreshFromHash() {
+  const params = utils.parseHashParams(window.location.hash);
+  handleParams(params);
 }
 
 // 5. EVENT LISTENERS
@@ -66,6 +97,7 @@ function setupEventListeners() {
 
   els.usernameInput.addEventListener('input', (e) => {
     myHandle = e.target.value.trim();
+    updateProfileDisplay();
     localStorage.setItem('p2p_handle', myHandle);
   });
 
@@ -119,22 +151,33 @@ function setupEventListeners() {
     els.copyBtn.textContent = 'COPIED! ✅';
     setTimeout(() => els.copyBtn.textContent = originalText, 2000);
   });
+
+  window.addEventListener('hashchange', refreshFromHash);
+}
+
+function updateProfileDisplay() {
+  els.profileName.textContent = myHandle || 'Anonymous Hero';
 }
 
 // 6. ROOM MANAGEMENT
 function renderRoomList() {
   els.roomList.innerHTML = '';
   rooms.forEach(room => {
+    const li = document.createElement('li');
     const btn = document.createElement('button');
-    btn.className = `room-item group ${activeRoomId === room.id ? 'active' : ''}`;
+    btn.className = `room-item w-full group ${activeRoomId === room.id ? 'active' : ''}`;
     btn.dataset.roomId = room.id;
+    btn.setAttribute('role', 'button');
+    btn.setAttribute('aria-label', `Join room ${room.name}`);
+    btn.tabIndex = 0;
+
     btn.innerHTML = `
-      <span class="room-icon">${room.icon || '💬'}</span>
+      <span class="room-icon" aria-hidden="true">${room.icon || '💬'}</span>
       <div class="flex-1 min-w-0">
         <div class="room-name truncate">${room.name}</div>
-        <div class="text-[10px] opacity-60 truncate">${room.id}</div>
+        <div class="text-[10px] truncate text-[#1A1A1A]">${room.id}</div>
       </div>
-      ${!room.isPrivate ? `<button class="rename-btn text-xs opacity-0 group-hover:opacity-100" data-id="${room.id}">✏️</button>` : ''}
+      ${!room.isPrivate ? `<button class="rename-btn text-xs opacity-0 group-hover:opacity-100" data-id="${room.id}" aria-label="Rename room ${room.name}">✏️</button>` : ''}
     `;
 
     btn.addEventListener('click', (e) => {
@@ -147,7 +190,8 @@ function renderRoomList() {
       if (window.innerWidth < 640) els.sidebar.classList.remove('open');
     });
 
-    els.roomList.appendChild(btn);
+    li.appendChild(btn);
+    els.roomList.appendChild(li);
   });
 }
 
@@ -203,6 +247,7 @@ async function switchRoom(id) {
   history.forEach(msg => appendMessageUI(msg, msg.isOwn));
 
   renderRoomList();
+  els.messageInput.focus();
 
   if (room && !room.isPrivate) {
     initP2P(room);
@@ -274,10 +319,10 @@ function appendMessageUI(data, isOwn) {
   const sender = isOwn ? 'You' : utils.escapeHtml(data.sender || 'Hero');
 
   div.innerHTML = `
-    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-[10px] font-black uppercase text-[#1A1A1A]/60">${sender}</span>
-    <div class="p-3 ${isOwn ? 'bg-[#4D96FF] chat-bubble-right text-white border-4 border-[#1A1A1A]' : 'bg-white chat-bubble-left text-[#1A1A1A]'} font-bold">
+    <span class="${isOwn ? 'mr-2' : 'ml-2'} mb-1 text-[10px] font-black uppercase text-[#1A1A1A]">${sender}</span>
+    <div class="p-3 ${isOwn ? 'bg-[#4D96FF] chat-bubble-right text-[#1A1A1A] border-4 border-[#1A1A1A]' : 'bg-white chat-bubble-left text-[#1A1A1A]'} font-bold">
       ${utils.escapeHtml(data.text || '')}
-      <span class="message-meta text-[10px] mt-1 opacity-60">${time}</span>
+      <span class="message-meta text-[10px] mt-1 text-[#1A1A1A]">${time}</span>
     </div>
   `;
 
@@ -293,17 +338,7 @@ function appendSystemMessage(text) {
   els.messagesContainer.scrollTop = els.messagesContainer.scrollHeight;
 }
 
-async function autoJoinFromParams(params) {
-  if (params.room) {
-    addRoom(params.room, params.room, params.pass || '');
-    if (params.name && !myHandle) {
-      myHandle = params.name;
-      els.usernameInput.value = myHandle;
-      localStorage.setItem('p2p_handle', myHandle);
-    }
-    switchRoom(params.room);
-  }
-}
+
 
 // Start the app
 init();

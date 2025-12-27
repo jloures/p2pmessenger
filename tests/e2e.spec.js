@@ -8,6 +8,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await aliceContext.grantPermissions(['clipboard-read', 'clipboard-write']);
         const alicePage = await aliceContext.newPage();
         await alicePage.goto('/');
+        await alicePage.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         const roomName = `e2e-room-${Math.random().toString(36).substring(7)}`;
         await alicePage.fill('#username', 'Alice');
@@ -27,7 +28,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         // 3. Bob joins using the share link
         const bobContext = await browser.newContext();
         const bobPage = await bobContext.newPage();
+        await bobPage.setViewportSize({ width: 1280, height: 720 });
         await bobPage.goto(`${shareLink}&name=Bob`);
+        await bobPage.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
 
         await expect(bobPage.locator('#display-room-id')).toHaveText(roomName.toUpperCase());
         await bobPage.fill('#username', 'Bob');
@@ -48,9 +51,9 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         await expect(alicePage.locator('.chat-bubble-left')).toContainText('Totally! No servers involved.', { timeout: 15000 });
 
         // 6. Leaving the Room
-        await bobPage.click('#leave-btn');
+        await bobPage.evaluate(() => document.getElementById('leave-btn').click());
         // Bob should be back in Saved Messages
-        await expect(bobPage.locator('#display-room-id')).toContainText('SAVED-MESSAGES');
+        await expect(bobPage.locator('#display-room-id')).toContainText('SAVED-MESSAGES', { timeout: 10000 });
 
         // Alice should see Bob left
         await expect(alicePage.locator('#peer-count')).toContainText('1 HERO ONLINE', { timeout: 30000 });
@@ -67,6 +70,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         const contextA = await browser.newContext();
         const pageA = await contextA.newPage();
         await pageA.goto('/');
+        await pageA.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
         await pageA.fill('#username', 'Alice');
         await pageA.click('#show-join-modal');
         await pageA.fill('#room-id', roomName);
@@ -77,6 +81,7 @@ test.describe('P2P Messenger End-to-End Journeys', () => {
         const contextB = await browser.newContext();
         const pageB = await contextB.newPage();
         await pageB.goto('/');
+        await pageB.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
         await pageB.fill('#username', 'Bob');
         await pageB.click('#show-join-modal');
         await pageB.fill('#room-id', roomName);

@@ -59,6 +59,80 @@ jobs:
       - name: Run UI Tests
         run: npm run test:ui
 
+  # Job 2.5: Unit Logic Tests
+  test-unit:
+    name: Unit Logic Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Run Unit Tests
+        run: npm run test:unit
+
+  # Job 2.6: Fuzz Resilience Tests
+  test-fuzz:
+    name: Fuzz Resilience Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run Fuzz Tests
+        run: npm run test:fuzz
+
+  # Job 2.7: Visual Regression Tests
+  test-visual:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run Visual Tests
+        run: npm run test:visual
+
+  # Job 2.8: Accessibility Audits
+  test-a11y:
+    name: Accessibility Audits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run A11y Tests
+        run: npm run test:a11y
+
   # Job 3: Full End-to-End Journeys
   test-e2e:
     name: E2E Journey Tests
@@ -82,7 +156,7 @@ jobs:
   deploy:
     name: Deploy to Production
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test-core, test-ui, test-e2e]
+    needs: [test-core, test-ui, test-unit, test-fuzz, test-visual, test-a11y, test-e2e]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
